@@ -33,21 +33,21 @@ from . import addonVersionCheck
 from .addonVersionCheck import isAddonCompatible
 
 MANIFEST_FILENAME = "manifest.ini"
-stateFilename="addonsState.pickle"
+stateFilename = "addonsState.pickle"
 BUNDLE_EXTENSION = "nvda-addon"
 BUNDLE_MIMETYPE = "application/x-nvda-addon"
 NVDA_ADDON_PROG_ID = "NVDA.Addon.1"
-ADDON_PENDINGINSTALL_SUFFIX=".pendingInstall"
-DELETEDIR_SUFFIX=".delete"
+ADDON_PENDINGINSTALL_SUFFIX = ".pendingInstall"
+DELETEDIR_SUFFIX = ".delete"
 
-state={}
+state = {}
 
 # Add-ons that are blocked from running because they are incompatible
-_blockedAddons=set()
+_blockedAddons = set()
 
 def loadState():
 	global state
-	statePath=os.path.join(globalVars.appArgs.configPath,stateFilename)
+	statePath = os.path.join(globalVars.appArgs.configPath, stateFilename)
 	try:
 		# #9038: Python 3 requires binary format when working with pickles.
 		with open(statePath, "rb") as f:
@@ -69,7 +69,7 @@ def loadState():
 		}
 
 def saveState():
-	statePath=os.path.join(globalVars.appArgs.configPath,stateFilename)
+	statePath = os.path.join(globalVars.appArgs.configPath, stateFilename)
 	try:
 		# #9038: Python 3 requires binary format when working with pickles.
 		with open(statePath, "wb") as f:
@@ -84,7 +84,8 @@ def getRunningAddons():
 
 def getIncompatibleAddons(
 		currentAPIVersion=addonAPIVersion.CURRENT,
-		backCompatToAPIVersion=addonAPIVersion.BACK_COMPAT_TO):
+		backCompatToAPIVersion=addonAPIVersion.BACK_COMPAT_TO
+):
 	""" Returns a generator of the add-ons that are not compatible.
 	"""
 	return getAvailableAddons(
@@ -99,11 +100,11 @@ def getIncompatibleAddons(
 def completePendingAddonRemoves():
 	"""Removes any add-ons that could not be removed on the last run of NVDA"""
 	user_addons = os.path.join(globalVars.appArgs.configPath, "addons")
-	pendingRemovesSet=state['pendingRemovesSet']
+	pendingRemovesSet = state['pendingRemovesSet']
 	for addonName in list(pendingRemovesSet):
-		addonPath=os.path.join(user_addons,addonName)
+		addonPath = os.path.join(user_addons, addonName)
 		if os.path.isdir(addonPath):
-			addon=Addon(addonPath)
+			addon = Addon(addonPath)
 			try:
 				addon.completeRemove()
 			except RuntimeError:
@@ -113,10 +114,10 @@ def completePendingAddonRemoves():
 
 def completePendingAddonInstalls():
 	user_addons = os.path.join(globalVars.appArgs.configPath, "addons")
-	pendingInstallsSet=state['pendingInstallsSet']
+	pendingInstallsSet = state['pendingInstallsSet']
 	for addonName in pendingInstallsSet:
-		newPath=os.path.join(user_addons,addonName)
-		oldPath=newPath+ADDON_PENDINGINSTALL_SUFFIX
+		newPath = os.path.join(user_addons, addonName)
+		oldPath = newPath + ADDON_PENDINGINSTALL_SUFFIX
 		try:
 			os.rename(oldPath,newPath)
 		except:
@@ -127,7 +128,7 @@ def removeFailedDeletions():
 	user_addons = os.path.join(globalVars.appArgs.configPath, "addons")
 	for p in os.listdir(user_addons):
 		if p.endswith(DELETEDIR_SUFFIX):
-			path=os.path.join(user_addons,p)
+			path = os.path.join(user_addons, p)
 			shutil.rmtree(path,ignore_errors=True)
 			if os.path.exists(path):
 				log.error("Failed to delete path %s, try removing manually"%path)
@@ -235,7 +236,7 @@ def installAddonBundle(bundle):
 	"""Extracts an Addon bundle in to a unique subdirectory of the user addons directory, marking the addon as needing install completion on NVDA restart."""
 	addonPath = os.path.join(globalVars.appArgs.configPath, "addons",bundle.manifest['name']+ADDON_PENDINGINSTALL_SUFFIX)
 	bundle.extract(addonPath)
-	addon=Addon(addonPath)
+	addon = Addon(addonPath)
 	# #2715: The add-on must be added to _availableAddons here so that
 	# translations can be used in installTasks module.
 	_availableAddons[addon.path]=addon
