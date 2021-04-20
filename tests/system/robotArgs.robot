@@ -1,8 +1,0 @@
---loglevel DEBUG
---outputdir testOutput\system
---xunit systemTests.xml
---pythonpath .\tests\system\libraries
---include NVDA
---exclude excluded_from_build
---variable whichNVDA:source
---variable installDir:
