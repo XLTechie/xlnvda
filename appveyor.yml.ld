@@ -47,8 +47,8 @@ install:
  - py -m pip install -U pip
  - py -m pip install -U scons
  # Decrypt files.
- - openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in authenticode.pfx.enc -out authenticode.pfx
- - openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in ssh_id_rsa.enc -out ssh_id_rsa
+ #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in authenticode.pfx.enc -out authenticode.pfx
+ #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in ssh_id_rsa.enc -out ssh_id_rsa
  # Install ssh stuff.
  - copy ssh_id_rsa %userprofile%\.ssh\id_rsa
  - type ssh_known_hosts >> %userprofile%\.ssh\known_hosts
@@ -66,8 +66,8 @@ build_script:
      if ($env:versionType) {
       $sconsArgs += " updateVersionType=$env:versionType"
      }
-     $sconsArgs += ' publisher="NV Access"'
-     $sconsArgs += " certFile=appveyor\authenticode.pfx certTimestampServer=http://timestamp.digicert.com"
+     #$sconsArgs += ' publisher="NV Access"'
+     #$sconsArgs += " certFile=appveyor\authenticode.pfx certTimestampServer=http://timestamp.digicert.com"
      $sconsArgs += " version_build=$env:APPVEYOR_BUILD_NUMBER"
      # We use cmd to run scons because PowerShell throws exceptions if warnings get dumped to stderr.
      # It's possible to work around this, but the workarounds have annoying side effects.
