@@ -1,4 +1,5 @@
 version: "{branch}-{build}"
+os: Visual Studio 2015
 
 branches:
  only:
@@ -44,8 +45,9 @@ clone_depth: 1
 
 install:
  #- cd appveyor
- - py -m pip install -U pip
- - py -m pip install -U scons
+ #- py -m pip install -U pip
+ #- py -m pip install -U scons
+ - py -m pip install SCons==2.4.1
  # Decrypt files.
  #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in authenticode.pfx.enc -out authenticode.pfx
  #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in ssh_id_rsa.enc -out ssh_id_rsa
