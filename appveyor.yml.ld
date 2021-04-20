@@ -1,8 +1,12 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
+branches:
+ except:
+  - master
+
 environment:
- PY_PYTHON: 3.8-32
+ PY_PYTHON: 3.7-32
  encFileKey:
   secure: ekOvuyywHuDdGZmRmoj+b3jfrq39A2xlx4RD5ZUGd/8=
  mozillaSymsAuthToken:
@@ -13,39 +17,32 @@ init:
  - ps: |
      # iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
      $pythonVersion = (py --version)
+     Add-AppveyorMessage "#ld: Python version: $pythonVersion"
      echo $pythonVersion
      if ($env:APPVEYOR_REPO_TAG_NAME -and $env:APPVEYOR_REPO_TAG_NAME.StartsWith("release-")) {
+      Add-AppveyorMessage "#ld: in if 1"
       # Strip "release-" prefix.
       $version = $env:APPVEYOR_REPO_TAG_NAME.Substring(8)
       Set-AppveyorBuildVariable "release" "1"
-      if ($env:APPVEYOR_REPO_TAG_NAME.Contains("rc") -or $env:APPVEYOR_REPO_TAG_NAME.Contains("beta")) {
-       $versionType = "beta"
-      } else {
-       $versionType = "stable"
-      }
      } else {
-      if($env:APPVEYOR_PULL_REQUEST_NUMBER) {
-       $version = "pr$env:APPVEYOR_PULL_REQUEST_NUMBER-$env:APPVEYOR_BUILD_NUMBER," + $env:APPVEYOR_REPO_COMMIT.Substring(0, 8)
-      } elseif($env:APPVEYOR_REPO_BRANCH -eq "master") {
-       $version = "alpha-$env:APPVEYOR_BUILD_NUMBER," + $env:APPVEYOR_REPO_COMMIT.Substring(0, 8)
-      } else {
-       $version = "$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER," + $env:APPVEYOR_REPO_COMMIT.Substring(0, 8)
-       if($env:APPVEYOR_REPO_BRANCH.StartsWith("try-release-")) {
-        Set-AppveyorBuildVariable "release" "1"
-       }
-      }
-      # The version is unique even for rebuilds, so we can use it for the AppVeyor version.
-      Update-AppveyorBuild -Version $version
-      if($env:APPVEYOR_REPO_BRANCH -eq "master") {
-       $versionType = "snapshot:alpha"
-      } elseif (!$env:APPVEYOR_REPO_BRANCH.StartsWith("try-")) {
-       $versionType = "snapshot:$env:APPVEYOR_REPO_BRANCH"
-      }
+      Add-AppveyorMessage "#ld: In else 1"
+      $versionType = "stable"
      }
+     Add-AppveyorMessage "#ld: Out of if 1"
+     $version = "$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER," + $env:APPVEYOR_REPO_COMMIT.Substring(0, 8)
+     if($env:APPVEYOR_REPO_BRANCH.StartsWith("try-release-")) {
+      Add-AppveyorMessage "#ld: In if 2"
+      Set-AppveyorBuildVariable "release" "1"
+     }
+     Add-AppveyorMessage "#ld: Out of if 2"
+     # The version is unique even for rebuilds, so we can use it for the AppVeyor version.
+     Update-AppveyorBuild -Version $version
      Set-AppveyorBuildVariable "version" $version
      if ($versionType) {
+      Add-AppveyorMessage "#ld: In if 3"
       Set-AppveyorBuildVariable "versionType" $versionType
      }
+     Add-AppveyorMessage "#ld: Out of if 3"
 
 clone_depth: 1
 
@@ -65,17 +62,23 @@ install:
 
 build_script:
  - ps: |
+     Add-AppveyorMessage "#ld: In build script."
      $sconsOutTargets = "launcher developerGuide  changes userGuide client"
      if(!$env:APPVEYOR_PULL_REQUEST_NUMBER) {
+      Add-AppveyorMessage "#ld: In if 4."
       $sconsOutTargets += " appx"
      }
+     Add-AppveyorMessage "#ld: Out of if 4."
      $sconsArgs = "version=$env:version"
      if ($env:release) {
+      Add-AppveyorMessage "#ld: In if 5."
       $sconsArgs += " release=1"
      }
      if ($env:versionType) {
+      Add-AppveyorMessage "#ld: In if 6."
       $sconsArgs += " updateVersionType=$env:versionType"
      }
+     Add-AppveyorMessage "#ld: Out of ifs 5 and 6."
      #$sconsArgs += ' publisher="NV Access"'
      #if(!$env:APPVEYOR_PULL_REQUEST_NUMBER) {
       #$sconsArgs += " certFile=appveyor\authenticode.pfx certTimestampServer=http://timestamp.digicert.com"
@@ -85,6 +88,9 @@ build_script:
      # It's possible to work around this, but the workarounds have annoying side effects.
      Set-AppveyorBuildVariable "sconsOutTargets" $sconsOutTargets
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
+     Add-AppveyorMessage "#ld: $sconsOutTargets: " $sconsOutTargets
+     Add-AppveyorMessage "#ld: $sconsArgs: " $sconsArgs
+
  - 'echo scons args: %sconsArgs%'
  - scons source %sconsArgs%
  - if ERRORLEVEL 1 exit %ERRORLEVEL%
@@ -93,6 +99,7 @@ build_script:
      cmd.exe /c "scons checkPot $sconsArgs"
      if($LastExitCode -ne 0) {
       $errorCode=$LastExitCode
+      Add-AppveyorMessage "#ld: In if 6."
       Add-AppveyorMessage "Translation comments missing or unexpectedly included."
      }
      if ($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
@@ -102,6 +109,7 @@ build_script:
  - if ERRORLEVEL 1 exit %ERRORLEVEL%
  # Build symbol store.
  - ps: |
+     Add-AppveyorMessage "#ld: In the symbols section."
      foreach ($syms in
       # We don't just include source\*.dll because that would include system dlls.
       "source\liblouis.dll", "source\*.pdb",
@@ -124,10 +132,13 @@ before_test:
  - mkdir testOutput\lint
  - ps: |
      $errorCode=0
+     Add-AppveyorMessage "#ld: In output."
      $nvdaLauncherFile=".\output\nvda"
      if(!$env:release) {
+      Add-AppveyorMessage "#ld: In if 7."
       $nvdaLauncherFile+="_snapshot"
      }
+     Add-AppveyorMessage "#ld: Out of if 7."
      $nvdaLauncherFile+="_${env:version}.exe"
      Set-AppveyorBuildVariable "nvdaLauncherFile" $nvdaLauncherFile
      echo NVDALauncherFile: $NVDALauncherFile
@@ -154,6 +165,7 @@ before_test:
 test_script:
 # Unit Tests (Python)
  - ps: |
+     Add-AppveyorMessage "#ld: In test script."
      $errorCode=0
      $outDir = (Resolve-Path .\testOutput\unit\)
      $unitTestsXml = "$outDir\unitTests.xml"
@@ -169,6 +181,7 @@ test_script:
 
 # Flake8 Linting
  - ps: |
+    Add-AppveyorMessage "#ld: In flake8."
     if($env:APPVEYOR_PULL_REQUEST_NUMBER) {
       $lintOutput = (Resolve-Path .\testOutput\lint\)
       $lintSource = (Resolve-Path .\tests\lint\)
@@ -195,6 +208,7 @@ test_script:
 
 # System tests
  - ps: |
+     Add-AppveyorMessage "#ld: In system tests."
      $testOutput = (Resolve-Path .\testOutput\)
      $systemTestOutput = (Resolve-Path "$testOutput\system")
      .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"${env:nvdaLauncherFile}" --include installer
@@ -218,6 +232,7 @@ artifacts:
 on_failure:
 #  `- path` is not allowed in `on_failure` use powerShell instead
  - ps: |
+    Add-AppveyorMessage "#ld: In on failure."
     # Upload artifacts, preserving directory structure.
     $uploadFromFolder = "output\"
     if( Test-Path $uploadFromFolder ){
@@ -233,6 +248,7 @@ on_failure:
 # For ordering of appveyor yml phases, see: https://www.appveyor.com/docs/build-configuration/#build-pipeline
 deploy_script:
  - ps: |
+     Add-AppveyorMessage "#ld: In deploy."
      if (!$env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:versionType) {
       # Not a try build.
       # Notify our server.
@@ -273,6 +289,7 @@ deploy_script:
 on_finish:
   # add a message to point to the NVDA build, to make testing PR's easier.
   - ps: |
+      Add-AppveyorMessage "#ld: In on finish."
       # Save an exact list of the actual Python packages and their versions that got installed, to aide in reproducing a build
       .\venvUtils\exportPackageList.bat installed_python_packages.txt
       Push-AppveyorArtifact installed_python_packages.txt
