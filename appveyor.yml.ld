@@ -43,16 +43,16 @@ init:
 clone_depth: 1
 
 install:
- - cd appveyor
+ #- cd appveyor
  - py -m pip install -U pip
  - py -m pip install -U scons
  # Decrypt files.
  #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in authenticode.pfx.enc -out authenticode.pfx
  #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in ssh_id_rsa.enc -out ssh_id_rsa
  # Install ssh stuff.
- - copy ssh_id_rsa %userprofile%\.ssh\id_rsa
- - type ssh_known_hosts >> %userprofile%\.ssh\known_hosts
- - cd ..
+ #- copy ssh_id_rsa %userprofile%\.ssh\id_rsa
+ #- type ssh_known_hosts >> %userprofile%\.ssh\known_hosts
+ #- cd ..
  - git submodule update --init
 
 build_script:
