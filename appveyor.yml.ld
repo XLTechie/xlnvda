@@ -44,12 +44,14 @@ clone_depth: 1
 
 install:
  - cd appveyor
+ - py -m pip install -U pip
+ - py -m pip install -U scons
  # Decrypt files.
- #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in authenticode.pfx.enc -out authenticode.pfx
- #- openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in ssh_id_rsa.enc -out ssh_id_rsa
+ - openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in authenticode.pfx.enc -out authenticode.pfx
+ - openssl enc -aes-256-cbc -d -pass pass:%encFileKey% -in ssh_id_rsa.enc -out ssh_id_rsa
  # Install ssh stuff.
- #- copy ssh_id_rsa %userprofile%\.ssh\id_rsa
- #- type ssh_known_hosts >> %userprofile%\.ssh\known_hosts
+ - copy ssh_id_rsa %userprofile%\.ssh\id_rsa
+ - type ssh_known_hosts >> %userprofile%\.ssh\known_hosts
  - cd ..
  - git submodule update --init
 
@@ -119,6 +121,6 @@ deploy_script:
       #ConvertTo-Json -InputObject $data -Compress | ssh nvaccess@exbi.nvaccess.org nvdaAppveyorHook
       # Upload symbols to Mozilla.
       #Start-FileDownload https://github.com/mozilla/gecko-dev/raw/master/toolkit/crashreporter/tools/win32/dump_syms_vc1800.exe -FileName appveyor\dump_syms.exe
-      #py -m pip install requests
+      py -m pip install requests
       #py appveyor\mozillaSyms.py
      }
