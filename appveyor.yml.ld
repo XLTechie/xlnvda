@@ -1,15 +1,6 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
-branches:
- only:
-  - master
-  #- beta
-  #- rc
-  - /try-.*/
-  # For tags, branch = tag if GitHub couldn't work out the base branch.
-  - /release-.*/
-  
 environment:
  PY_PYTHON: 3.8-32
  encFileKey:
