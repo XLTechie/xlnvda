@@ -1,5 +1,6 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
+clone_folder: c:\projects\nvda
 
 branches:
  except:
@@ -7,17 +8,13 @@ branches:
 
 environment:
  PY_PYTHON: 3.7-32
- encFileKey:
-  secure: ekOvuyywHuDdGZmRmoj+b3jfrq39A2xlx4RD5ZUGd/8=
- mozillaSymsAuthToken:
-  secure: p37Fxo78fsRdmR8v8TPz978QvVaqvbjdIBzFe8ZOpX0FUprm46rkhd374QM1CqMO
  symstore: C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\symstore.exe
 
 init:
  - ps: |
      # iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
      $pythonVersion = (py --version)
-     Add-AppveyorMessage "#ld: Python version: $pythonVersion"
+     Add-AppveyorMessage "#ld: Python version: " $pythonVersion
      echo $pythonVersion
      if ($env:APPVEYOR_REPO_TAG_NAME -and $env:APPVEYOR_REPO_TAG_NAME.StartsWith("release-")) {
       Add-AppveyorMessage "#ld: in if 1"
@@ -30,16 +27,11 @@ init:
      }
      Add-AppveyorMessage "#ld: Out of if 1"
      $version = "$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER," + $env:APPVEYOR_REPO_COMMIT.Substring(0, 8)
-     if($env:APPVEYOR_REPO_BRANCH.StartsWith("try-release-")) {
-      Add-AppveyorMessage "#ld: In if 2"
-      Set-AppveyorBuildVariable "release" "1"
-     }
-     Add-AppveyorMessage "#ld: Out of if 2"
      # The version is unique even for rebuilds, so we can use it for the AppVeyor version.
      Update-AppveyorBuild -Version $version
      Set-AppveyorBuildVariable "version" $version
      if ($versionType) {
-      Add-AppveyorMessage "#ld: In if 3"
+      Add-AppveyorMessage "#ld: In if 3, versionType: " $versionType
       Set-AppveyorBuildVariable "versionType" $versionType
      }
      Add-AppveyorMessage "#ld: Out of if 3"
@@ -47,28 +39,14 @@ init:
 clone_depth: 1
 
 install:
- #- cd appveyor
- # Decrypt files.
- #- ps: |
-    #if(!$env:APPVEYOR_PULL_REQUEST_NUMBER) {
-     #openssl enc -md md5 -aes-256-cbc -d -pass pass:$env:encFileKey -in authenticode.pfx.enc -out authenticode.pfx
-     #openssl enc -md md5 -aes-256-cbc -d -pass pass:$env:encFileKey -in ssh_id_rsa.enc -out ssh_id_rsa
-     # Install ssh stuff.
-     #copy ssh_id_rsa $env:userprofile\.ssh\id_rsa
-    #}
- #- type ssh_known_hosts >> %userprofile%\.ssh\known_hosts
- #- cd ..
  - git submodule update --init
 
 build_script:
  - ps: |
      Add-AppveyorMessage "#ld: In build script."
      $sconsOutTargets = "launcher developerGuide  changes userGuide client"
-     if(!$env:APPVEYOR_PULL_REQUEST_NUMBER) {
-      Add-AppveyorMessage "#ld: In if 4."
-      $sconsOutTargets += " appx"
-     }
-     Add-AppveyorMessage "#ld: Out of if 4."
+     $sconsOutTargets += " appx"
+     Add-AppveyorMessage "#ld: scons out targets: " $sconsOutTargets
      $sconsArgs = "version=$env:version"
      if ($env:release) {
       Add-AppveyorMessage "#ld: In if 5."
@@ -79,17 +57,13 @@ build_script:
       $sconsArgs += " updateVersionType=$env:versionType"
      }
      Add-AppveyorMessage "#ld: Out of ifs 5 and 6."
-     #$sconsArgs += ' publisher="NV Access"'
-     #if(!$env:APPVEYOR_PULL_REQUEST_NUMBER) {
-      #$sconsArgs += " certFile=appveyor\authenticode.pfx certTimestampServer=http://timestamp.digicert.com"
-     #}
+     $sconsArgs += ' publisher="Open Source Systems, Ltd."'
      $sconsArgs += " version_build=$env:APPVEYOR_BUILD_NUMBER"
      # We use cmd to run scons because PowerShell throws exceptions if warnings get dumped to stderr.
      # It's possible to work around this, but the workarounds have annoying side effects.
      Set-AppveyorBuildVariable "sconsOutTargets" $sconsOutTargets
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
-     Add-AppveyorMessage "#ld: $sconsOutTargets: " $sconsOutTargets
-     Add-AppveyorMessage "#ld: $sconsArgs: " $sconsArgs
+     Add-AppveyorMessage "#ld: scons args: " $sconsArgs
 
  - 'echo scons args: %sconsArgs%'
  - scons source %sconsArgs%
@@ -99,7 +73,7 @@ build_script:
      cmd.exe /c "scons checkPot $sconsArgs"
      if($LastExitCode -ne 0) {
       $errorCode=$LastExitCode
-      Add-AppveyorMessage "#ld: In if 6."
+      Add-AppveyorMessage "#ld: In if 1."
       Add-AppveyorMessage "Translation comments missing or unexpectedly included."
      }
      if ($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
@@ -179,33 +153,6 @@ test_script:
      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $unitTestsXml)
      if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
 
-# Flake8 Linting
- - ps: |
-    Add-AppveyorMessage "#ld: In flake8."
-    if($env:APPVEYOR_PULL_REQUEST_NUMBER) {
-      $lintOutput = (Resolve-Path .\testOutput\lint\)
-      $lintSource = (Resolve-Path .\tests\lint\)
-      # When Appveyor runs for a pr,
-      # the build is made from a new temporary commit,
-      # resulting from the pr branch being merged into its base branch.
-      # Therefore to create a diff for linting, we must fetch the head of the base branch.
-      # In a PR, APPVEYOR_REPO_BRANCH points to the head of the base branch. 
-     git fetch -q origin $env:APPVEYOR_REPO_BRANCH
-     $flake8Output = "$lintOutput\PR-Flake8.txt"
-      .\runlint.bat FETCH_HEAD "$flake8Output" 
-      if($LastExitCode -ne 0) {
-       $errorCode=$LastExitCode
-       Add-AppveyorMessage "PR introduces Flake8 errors"
-      }
-      Push-AppveyorArtifact $flake8Output
-      $junitXML = "$lintOutput\PR-Flake8.xml"
-      py "$lintSource\createJunitReport.py" "$flake8Output" "$junitXML"
-      Push-AppveyorArtifact $junitXML
-      $wc = New-Object 'System.Net.WebClient'
-      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $junitXML)
-      if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
-    }
-
 # System tests
  - ps: |
      Add-AppveyorMessage "#ld: In system tests."
@@ -252,12 +199,12 @@ deploy_script:
      if (!$env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:versionType) {
       # Not a try build.
       # Notify our server.
-      #$exe = Get-ChildItem -Name output\*.exe
-      #$hash = (Get-FileHash "output\$exe" -Algorithm SHA1).Hash.ToLower()
-      #$apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
-      #echo apiversion: $apiVersion
-      #$apiCompatTo = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
-      #echo apiBackCompatTo: $apiCompatTo
+      $exe = Get-ChildItem -Name output\*.exe
+      $hash = (Get-FileHash "output\$exe" -Algorithm SHA1).Hash.ToLower()
+      $apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
+      echo apiversion: $apiVersion
+      $apiCompatTo = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
+      echo apiBackCompatTo: $apiCompatTo
       $data = @{
        jobId=$env:APPVEYOR_JOB_ID;
        commit=$env:APPVEYOR_REPO_COMMIT;
@@ -268,8 +215,8 @@ deploy_script:
        exe=$exe; hash=$hash;
        artifacts=$artifacts
       }
-      #ConvertTo-Json -InputObject $data -Compress | Out-File -FilePath deploy.json
-      #Push-AppveyorArtifact deploy.json
+      ConvertTo-Json -InputObject $data -Compress | Out-File -FilePath deploy.json
+      Push-AppveyorArtifact deploy.json
       # Execute the deploy script on the NV Access server via ssh.
       # Warning: if the server address is changed, 
       # The new address must be also included in appveyor\ssh_known_hosts in this repo
@@ -299,3 +246,11 @@ on_finish:
         $exeUrl="$appVeyorUrl/api/buildjobs/$env:APPVEYOR_JOB_ID/artifacts/output/$exe"
         Add-AppveyorMessage "[Build (for testing PR)]($exeUrl)"
       }
+
+notifications:
+  - provider: Email
+    to:
+      - luke@newanswertech.com
+    subject: 'Build {{status}}'
+    message: "{{message}}, {{commitId}}"
+    on_build_status_changed: true
