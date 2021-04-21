@@ -252,5 +252,5 @@ notifications:
     to:
       - luke@newanswertech.com
     subject: 'Build {{status}}'
-    message: "{{message}}, {{commitId}}"
+    message: "{{branch}}, {{messages}}, {{message}}, {{commitId}}"
     on_build_status_changed: true
