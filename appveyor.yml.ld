@@ -5,6 +5,7 @@ clone_folder: c:\projects\nvda
 branches:
  except:
   - master
+  - XLTechie-appveyor
 
 environment:
  PY_PYTHON: 3.7-32
@@ -14,7 +15,7 @@ init:
  - ps: |
      # iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
      $pythonVersion = (py --version)
-     Add-AppveyorMessage "#ld: Python version: " $pythonVersion
+     Add-AppveyorMessage "#ld: Python version: $pythonVersion"
      echo $pythonVersion
      if ($env:APPVEYOR_REPO_TAG_NAME -and $env:APPVEYOR_REPO_TAG_NAME.StartsWith("release-")) {
       Add-AppveyorMessage "#ld: in if 1"
