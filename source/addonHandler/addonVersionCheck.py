@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2018 NV Access Limited
+# Copyright (C) 2018-2020, NV Access Limited
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -26,7 +26,7 @@ def isAddonCompatible(
 		currentAPIVersion=addonAPIVersion.CURRENT,
 		backwardsCompatToVersion=addonAPIVersion.BACK_COMPAT_TO
 ):
-	"""Tests if the addon is compatible.  The compatibility is defined by having the required features in
+	"""Tests if the add-on is compatible.  The compatibility is defined by having the required features in
 NVDA, and by having been tested / built against an API version that is still supported
 by this version of NVDA.
 	"""
