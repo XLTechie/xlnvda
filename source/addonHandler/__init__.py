@@ -45,8 +45,8 @@ state = {}
 _blockedAddons = set()
 
 def loadState():
-	"""Reads the add-on state file (usually %appdata%\\nvda\\addonsState.pickle for an installed copy).
-	Populates the global state object with data from the file.
+	"""Reads the add-on state file (usually %appdata%\\nvda\\addonsState.pickle for an installed copy),
+	then populates the global state object with data from the file.
 	If there is no state file: creates an empty global state object.
 	"""
 	global state
@@ -71,7 +71,7 @@ def loadState():
 			"pendingDisableSet": set(),
 		}
 
-def saveState():
+def saveState() -> None:
 	"""Pickles the global state object, saving it to the add-on state file
 	(usually %appdata%\\nvda\\addonsState.pickle for an installed copy).
 	Logs a warning on failure.
@@ -113,7 +113,7 @@ def completePendingAddonRemoves():
 			try:
 				addon.completeRemove()
 			except RuntimeError:
-				log.exception("Failed to remove {0} add-on".format(addonName))
+				log.exception(f"Failed to remove {addonName} add-on")
 				continue
 		pendingRemovesSet.discard(addonName)
 
@@ -129,7 +129,7 @@ def completePendingAddonInstalls():
 		try:
 			os.rename(oldPath, newPath)
 		except:
-			log.error("Failed to complete add-on installation for {0}".format(addonName), exc_info=True)
+			log.error(f"Failed to complete add-on installation for {addonName}", exc_info=True)
 	pendingInstallsSet.clear()
 
 def removeFailedDeletions():
@@ -142,7 +142,7 @@ def removeFailedDeletions():
 			path = os.path.join(user_addons, p)
 			shutil.rmtree(path, ignore_errors=True)
 			if os.path.exists(path):
-				log.error("Failed to delete path {}, try removing manually".format(path))
+				log.error(f"Failed to delete path {path}, try removing manually")
 
 _disabledAddons = set()
 def disableAddonsIfAny():
@@ -193,33 +193,31 @@ def _getAvailableAddonsFromPath(path):
 	@type path: string
 	@rtype generator of Addon instances
 	"""
-	log.debug("Listing add-ons from %s", path)
+	log.debug(f"Listing add-ons from {path}")
 	for p in os.listdir(path):
 		if p.endswith(DELETEDIR_SUFFIX): continue
 		addon_path = os.path.join(path, p)
 		if os.path.isdir(addon_path) and addon_path not in ('.', '..'):
 			if not len(os.listdir(addon_path)):
-				log.error("Error loading add-on from path: %s", addon_path)
+				log.error(f"Error loading add-on from path: {addon_path}")
 			else:
-				log.debug("Loading add-on from %s", addon_path)
+				log.debug(f"Loading add-on from {addon_path}")
 				try:
 					a = Addon(addon_path)
 					name = a.manifest['name']
 					log.debug(
-						"Found add-on {name} - {a.version}."
-						" Requires API: {a.minimumNVDAVersion}."
-						" Last-tested API: {a.lastTestedNVDAVersion}".format(
-							name=name,
-							a=a
-						))
+						f"Found add-on {name} - {a.version}."
+						f" Requires API: {a.minimumNVDAVersion}."
+						f" Last-tested API: {a.lastTestedNVDAVersion}"
+						 )
 					if a.isDisabled:
-						log.debug("Disabling add-on %s", name)
+						log.debug(f"Disabling add-on {name}")
 					if not isAddonCompatible(a):
-						log.debugWarning("Add-on %s is considered incompatible", name)
+						log.debugWarning(f"Add-on {name} is considered incompatible")
 						_blockedAddons.add(a.name)
 					yield a
 				except:
-					log.error("Error loading add-on from path: %s", addon_path, exc_info=True)
+					log.error(f"Error loading add-on from path: {addon_path}"), exc_info=True)
 				
 _availableAddons = collections.OrderedDict()
 def getAvailableAddons(refresh=False, filterFunc=None):
@@ -258,7 +256,7 @@ def installAddonBundle(bundle):
 	try:
 		addon.runInstallTask("onInstall")
 	except:
-		log.error("task 'onInstall' on add-on '{0}' failed".format(addon.name), exc_info=True)
+		log.error(f"task 'onInstall' on add-on '{addon.name}' failed", exc_info=True)
 		del _availableAddons[addon.path]
 		addon.completeRemove(runUninstallTask=False)
 		raise AddonError("Installation failed")
@@ -306,7 +304,7 @@ class Addon(AddonBase):
 			for translatedPath in _translatedManifestPaths():
 				p = os.path.join(self.path, translatedPath)
 				if os.path.exists(p):
-					log.debug("Using manifest translation from %s", p)
+					log.debug(f"Using manifest translation from {p}")
 					translatedInput = open(p, 'rb')
 					break
 			self.manifest = AddonManifest(f, translatedInput)
@@ -339,7 +337,7 @@ class Addon(AddonBase):
 			state['pendingDisableSet'].discard(self.name)
 		saveState()
 
-	def completeRemove(self, runUninstallTask=True):
+	def completeRemove(self, runUninstallTask:bool=True) -> None:
 		"""Removes an add-on that has been fully installed, or that is pending install."""
 		if runUninstallTask:
 			try:
@@ -348,7 +346,7 @@ class Addon(AddonBase):
 				_availableAddons[self.path] = self
 				self.runInstallTask("onUninstall")
 			except:
-				log.error("task 'onUninstall' on addon '{0}' failed".format(self.name), exc_info=True)
+				log.error(f"task 'onUninstall' on addon '{self.name}' failed", exc_info=True)
 			finally:
 				del _availableAddons[self.path]
 		tempPath = tempfile.mktemp(suffix=DELETEDIR_SUFFIX, dir=os.path.dirname(self.path))
@@ -358,10 +356,10 @@ class Addon(AddonBase):
 			raise RuntimeError("Cannot rename add-on path for deletion")
 		shutil.rmtree(tempPath, ignore_errors=True)
 		if os.path.exists(tempPath):
-			log.error("Error removing addon directory {}, deferring until next NVDA restart".format(self.path))
+			log.error(f"Error removing addon directory {self.path}, deferring until next NVDA restart")
 		# clean up the addons state. If an addon with the same name is installed, it should not be automatically
 		# disabled / blocked.
-		log.debug("removing addon {} from _disabledAddons/_blockedAddons".format(self.name))
+		log.debug(f"removing addon {self.name} from _disabledAddons/_blockedAddons")
 		_disabledAddons.discard(self.name)
 		_blockedAddons.discard(self.name)
 		saveState()
@@ -389,22 +387,19 @@ class Addon(AddonBase):
 		converted_path = self._getPathForInclusionInPackage(package)
 		package.__path__.insert(0, converted_path)
 		self._extendedPackages.add(package)
-		log.debug("Add-on %s added to %s package path", self.manifest['name'], package.__name__)
+		log.debug(f"Add-on {self.manifest['name']} added to {package.__name__} package path")
 
-	def enable(self, shouldEnable):
+	def enable(self, shouldEnable: bool) -> None:
 		"""Sets this add-on to be disabled or enabled when NVDA restarts."""
 		if shouldEnable:
 			if not isAddonCompatible(self):
 				import addonAPIVersion
 				raise AddonError(
 					"Add-on is not compatible:"
-					" minimum NVDA version {}, last tested version {},"
-					" NVDA current {}, NVDA backwards compatible to {}".format(
-						self.manifest['minimumNVDAVersion'],
-						self.manifest['lastTestedNVDAVersion'],
-						addonAPIVersion.CURRENT,
-						addonAPIVersion.BACK_COMPAT_TO
-					)
+					f" minimum NVDA version {self.manifest['minimumNVDAVersion']}, "
+					f"last tested version {self.manifest['lastTestedNVDAVersion']}, "
+					f" NVDA current {addonAPIVersion.CURRENT}, "
+					f"NVDA backwards compatible to {addonAPIVersion.BACK_COMPAT_TO}"
 				)
 			if self.name in state["pendingDisableSet"]:
 				# Undoing a pending disable.
@@ -423,7 +418,7 @@ class Addon(AddonBase):
 		saveState()
 
 	@property
-	def isRunning(self):
+	def isRunning(self) -> bool:
 		return not (
 			globalVars.appArgs.disableAddons
 			or self.isPendingInstall
@@ -432,48 +427,48 @@ class Addon(AddonBase):
 		)
 
 	@property
-	def isDisabled(self):
+	def isDisabled(self) -> bool:
 		return self.name in _disabledAddons
 
 	@property
-	def isBlocked(self):
+	def isBlocked(self) -> bool:
 		return self.name in _blockedAddons
 
 	@property
-	def isPendingEnable(self):
+	def isPendingEnable(self) -> bool:
 		return self.name in state["pendingEnableSet"]
 
 	@property
-	def isPendingDisable(self):
+	def isPendingDisable(self) -> bool:
 		return self.name in state["pendingDisableSet"]
 
-	def _getPathForInclusionInPackage(self, package):
+	def _getPathForInclusionInPackage(self, package) -> str:
 		extension_path = os.path.join(self.path, package.__name__)
 		return extension_path
 
-	def loadModule(self, name):
+	def loadModule(self, name: str):
 		""" loads a python module from the addon directory
 		@param name: the module name
 		@type name: string
 		@returns the python module with C{name}
 		@rtype python module
 		"""
-		log.debug("Importing module %s from plugin %s", name, self.name)
+		log.debug(f"Importing module {name} from plugin {self.name}")
 		importer = pkgutil.ImpImporter(self.path)
 		loader = importer.find_module(name)
 		if not loader:
 			return None
 		# Create a qualified full name to avoid modules with the same name on sys.modules.
-		fullname = "addons.{0}.{1}".format(self.name, name)
+		fullname = f"addons.{self.name}.{name}"
 		try:
 			return loader.load_module(fullname)
 		except ImportError:
-			# in this case return None, any other error throw to be handled elsewhere
+			# in this case return None, any other error raised will be handled elsewhere
 			return None
 
 	def getTranslationsInstance(self, domain='nvda'):
 		""" Gets the gettext translation instance for this add-on.
-		<addon-path>\\locale will be used to find .mo files, if exists.
+		<addon-path>\\locale will be used to find .mo files, if any.
 		If a translation file is not found the default fallback null translation is returned.
 		@param domain: the translation domain to retrieve. The 'nvda' default should be used in most cases.
 		@returns: the gettext translation class.
@@ -496,7 +491,7 @@ class Addon(AddonBase):
 			if func:
 				func(*args, **kwargs)
 
-	def getDocFilePath(self, fileName=None):
+	def getDocFilePath(self, fileName: str = None) -> str:
 		"""Get the path to a documentation file for this add-on.
 		The file should be located in C{doc\lang\file} inside the add-on,
 		where C{lang} is the language code and C{file} is the requested file name.
@@ -555,10 +550,10 @@ def getCodeAddon(obj=None, frameDist=1):
 	# Not found!
 	raise AddonError("Code does not belong to an addon")
 
-def initTranslation():
+def initTranslation() -> None:
 	"""Initializes internationalization support for an add-on.
-	Must be called at the top of each Python module that is part of an add-on, to allow plugins in the
-add-on to access gettext message information via calls to _().
+	Must be called at the top of each Python module that is part of an add-on, to allow the add-on to
+	encapsulate translatable messages in calls to _().
 	"""
 	addon = getCodeAddon(frameDist=2)
 	translations = addon.getTranslationsInstance()
@@ -589,7 +584,7 @@ class AddonBundle(AddonBase):
 	The bundle is compressed using the zip file format. Manifest information
 	is available without the need for extraction.
 	"""
-	def __init__(self, bundlePath):
+	def __init__(self, bundlePath: str) -> None:
 		""" Constructs an L{AddonBundle} from a filename.
 		@param bundlePath: The path for the bundle file.
 		"""
@@ -615,7 +610,7 @@ class AddonBundle(AddonBase):
 				_report_manifest_errors(self.manifest)
 				raise AddonError("Manifest file has errors.")
 
-	def extract(self, addonPath):
+	def extract(self, addonPath: str):
 		""" Extracts the bundle content to the specified path.
 		The addon will be extracted to L{addonPath}
 		@param addonPath: Path where to extract contents.
@@ -637,10 +632,10 @@ class AddonBundle(AddonBase):
 		"""
 		return self._manifest
 
-	def __repr__(self):
-		return "<AddonBundle at {}>".format(self._path)
+	def __repr__(self) -> str:
+		return f"<AddonBundle at {self._path}>"
 
-def createAddonBundleFromPath(path, destDir=None):
+def createAddonBundleFromPath(path: str, destDir: str = None) -> None:
 	""" Creates a bundle from a directory that contains an add-on manifest file."""
 	basedir = os.path.abspath(path)
 	# If  caller did not provide a destination directory name
@@ -650,13 +645,13 @@ def createAddonBundleFromPath(path, destDir=None):
 		destDir = os.path.dirname(basedir)
 	manifest_path = os.path.join(basedir, MANIFEST_FILENAME)
 	if not os.path.isfile(manifest_path):
-		raise AddonError("Can't find {} manifest file.".format(manifest_path))
+		raise AddonError(f"Can't find {manifest_path} manifest file.")
 	with open(manifest_path, 'rb') as f:
 		manifest = AddonManifest(f)
 	if manifest.errors is not None:
 		_report_manifest_errors(manifest)
 		raise AddonError("Manifest file has errors.")
-	bundleFilename = "{0}-{1}.{2}".format(manifest['name'], manifest['version'], BUNDLE_EXTENSION)
+	bundleFilename = f"{manifest['name']}-{manifest['version']}.{BUNDLE_EXTENSION}"
 	bundleDestination = os.path.join(destDir, bundleFilename)
 	with zipfile.ZipFile(bundleDestination, 'w') as z:
 		# FIXME: the include/exclude feature may or may not be useful. Also python files can be pre-compiled.
@@ -670,7 +665,7 @@ def createAddonBundleFromPath(path, destDir=None):
 
 
 def _report_manifest_errors(manifest):
-	log.warning("Error loading manifest:\n%s", manifest.errors)
+	log.warning(f"Error loading manifest:\n{manifest.errors})
 
 class AddonManifest(ConfigObj):
 	""" Add-on manifest file. It contains metadata about an NVDA add-on package. """
@@ -764,4 +759,4 @@ def validate_apiVersionString(value):
 		tuple = addonAPIVersion.getAPIVersionTupleFromString(value)
 		return tuple
 	except ValueError as e:
-		raise ValidateError('"{}" is not a valid API Version string: {}'.format(value, e))
+		raise ValidateError(f'"{value}" is not a valid API Version string: {e}')
