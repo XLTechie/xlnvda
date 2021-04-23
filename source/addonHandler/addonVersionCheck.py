@@ -7,7 +7,8 @@
 import addonAPIVersion
 
 def hasAddonGotRequiredSupport(addon, currentAPIVersion=addonAPIVersion.CURRENT):
-	"""True if NVDA provides the add-on with an API version high enough to meet the add-on's minimum requirements
+	"""True if NVDA provides the add-on with an API version high enough
+	to meet the add-on's minimum requirements.
 	"""
 	minVersion = addon.minimumNVDAVersion
 	return minVersion <= currentAPIVersion
@@ -25,8 +26,8 @@ def isAddonCompatible(
 		currentAPIVersion=addonAPIVersion.CURRENT,
 		backwardsCompatToVersion=addonAPIVersion.BACK_COMPAT_TO
 ):
-	"""Tests if the addon is compatible.
-	The compatibility is defined by having the required features in NVDA, and by having been tested / built against
-	an API version that is still supported by this version of NVDA.
+	"""Tests if the addon is compatible.  The compatibility is defined by having the required features in
+NVDA, and by having been tested / built against an API version that is still supported
+by this version of NVDA.
 	"""
 	return hasAddonGotRequiredSupport(addon, currentAPIVersion) and isAddonTested(addon, backwardsCompatToVersion)
