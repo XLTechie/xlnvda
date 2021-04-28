@@ -337,7 +337,7 @@ class MainFrame(wx.Frame):
 				"Explorer. This tool must make changes to the System registry and therefore "
 				"requires administrative access. Do you wish to proceed?"
 			),
-			# Translators: The title of the info dialog displayed when launching the COM Registration Fixing tool 
+			# Translators: The title of the info dialog displayed when launching the COM Registration Fixing tool
 			_("Fix COM Registrations"), wx.YES_NO | wx.CANCEL | wx.ICON_INFORMATION, self
 		)
 		# No and Cancel are the same result
