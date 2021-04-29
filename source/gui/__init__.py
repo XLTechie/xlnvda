@@ -620,7 +620,10 @@ def showGui():
 def quit():
 	wx.CallAfter(mainFrame.onExitCommand, None)
 
-def messageBox(message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=None, **kwargs):
+def messageBox(
+		message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=None,
+		OKLabel=None, CancelLabel=None, YesLabel=None, NoLabel=None, HelpLabel=None
+) -> int:
 	"""Display a message dialog.
 	This should be used for all message dialogs. Do not call C{wx.MessageDialog} and C{wx.MessageBox} directly,
 	because they can cause NVDA to freeze if a dialog and a settings dialog are open simultaneously. This method provides appropriate protections.
@@ -632,6 +635,16 @@ def messageBox(message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=Non
 	@type style: int
 	@param parent: The parent window (optional).
 	@type parent: C{wx.Window}
+	@param OKLabel: Alternative label for the OK button (optional).
+	@type OKLabel: C{wx.MessageDialog.SetOKLabel}
+	@param CancelLabel: Alternative label for the Cancel button (optional).
+	@type CancelLabel: C{wx.MessageDialog.SetCancelLabel}
+	@param YesLabel: Alternative label for the Yes button (optional).
+	@type YesLabel: C{wx.MessageDialog.SetYesNoLabels}
+	@param NoLabel: Alternative label for the No button (optional).
+	@type NoLabel: C{wx.MessageBox.SetYesNoLabels}
+	@param HelpLabel: Alternative label for the Help button (optional).
+	@type HelpLabel: C{wx.MessageBox.SetHelpLabel}
 	@return: Same as for wx.MessageBox.
 	@rtype: int
 	"""
