@@ -337,6 +337,7 @@ class MainFrame(wx.Frame):
 				' experiencing any of these problems:\nIf you are hearing the word "unknown" or "pane" '
 				"spoken when you are trying to read pages in web browsers.\n"
 				"If certain controls don't seem to be working on web pages, but they did in the past.\n"
+				"If NVDA's settings Windows are not closing correctly.\n"
 				"The Windows task bar, desktop, notification area, or other components have stopped being read "
 				"as you expect.\nIf you are having any of these issues, please try running this tool.\n"
 				"It will ask for administrative permission, so it can check and repair values in your "
