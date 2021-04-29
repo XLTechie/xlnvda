@@ -338,10 +338,10 @@ class MainFrame(wx.Frame):
 				"requires administrative access. Do you wish to proceed?"
 			),
 			# Translators: The title of the info dialog displayed when launching the COM Registration Fixing tool
-			_("Fix COM Registrations"), wx.YES_NO | wx.CANCEL | wx.ICON_INFORMATION, self
+			_("Fix COM Registrations"), wx.OK | wx.CANCEL | wx.ICON_INFORMATION, self,
+			OKLabel="&Continue"
 		)
-		# No and Cancel are the same result
-		if response != wx.YES:
+		if response != wx.OK:
 			log.debug("Run of COM Registration Fixing Tool canceled before UAC.")
 			return
 		progressDialog = IndeterminateProgressDialog(
