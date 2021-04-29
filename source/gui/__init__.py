@@ -620,13 +620,15 @@ def showGui():
 def quit():
 	wx.CallAfter(mainFrame.onExitCommand, None)
 
+
 def messageBox(
 		message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=None,
 		OKLabel=wx.OK, CancelLabel=wx.CANCEL, YesLabel=wx.YES, NoLabel=wx.NO, HelpLabel=wx.HELP
 ) -> int:
 	"""Display a message dialog.
 	This should be used for all message dialogs. Do not call C{wx.MessageDialog} and C{wx.MessageBox} directly,
-	because they can cause NVDA to freeze if a dialog and a settings dialog are open simultaneously. This method provides appropriate protections.
+	because they can cause NVDA to freeze if a dialog and a settings dialog are open simultaneously. This
+	function provides appropriate protections.
 	@param message: The message text.
 	@type message: str
 	@param caption: The caption (title) of the dialog.
@@ -664,11 +666,16 @@ def messageBox(
 	if not wasAlready:
 		isInMessageBox = False
 	# Callers expect wx.MessageBox style return values. Convert the wx.MessageDialog values.
-	if res == wx.ID_OK: res = wx.OK
-	elif res == wx.ID_CANCEL: res = wx.CANCEL
-	elif res == wx.ID_YES: res = wx.YES
-	elif res == wx.ID_NO: res = wx.NO
-	elif res == wx.ID_HELP: res = wx.HELP
+	if res == wx.ID_OK:
+		res = wx.OK
+	elif res == wx.ID_CANCEL:
+		res = wx.CANCEL
+	elif res == wx.ID_YES:
+		res = wx.YES
+	elif res == wx.ID_NO:
+		res = wx.NO
+	elif res == wx.ID_HELP:
+		res = wx.HELP
 	return res
 
 def runScriptModalDialog(dialog, callback=None):
