@@ -622,7 +622,7 @@ def quit():
 
 def messageBox(
 		message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=None,
-		OKLabel=None, CancelLabel=None, YesLabel=None, NoLabel=None, HelpLabel=None
+		OKLabel=wx.OK, CancelLabel=wx.CANCEL, YesLabel=wx.YES, NoLabel=wx.NO, HelpLabel=wx.HELP
 ) -> int:
 	"""Display a message dialog.
 	This should be used for all message dialogs. Do not call C{wx.MessageDialog} and C{wx.MessageBox} directly,
@@ -653,11 +653,22 @@ def messageBox(
 	isInMessageBox = True
 	if not parent:
 		mainFrame.prePopup()
-	res = wx.MessageBox(message, caption, style, parent or mainFrame)
+	with wx.MessageDialog(parent or mainFrame, message, caption=caption, style=style) as dlg:
+		# Unused labels are ignored, so it's safe to do this
+		dlg.SetOKCancelLabels(OKLabel, CancelLabel)
+		dlg.SetYesNoLabels(YesLabel, NoLabel)
+		dlg.SetHelpLabel(HelpLabel)
+		res = dlg.ShowModal()
 	if not parent:
 		mainFrame.postPopup()
 	if not wasAlready:
 		isInMessageBox = False
+	# Callers expect wx.MessageBox style return values. Convert the wx.MessageDialog values.
+	if res == wx.ID_OK: res = wx.OK
+	elif res == wx.ID_CANCEL: res = wx.CANCEL
+	elif res == wx.ID_YES: res = wx.YES
+	elif res == wx.ID_NO: res = wx.NO
+	elif res == wx.ID_HELP: res = wx.HELP
 	return res
 
 def runScriptModalDialog(dialog, callback=None):
