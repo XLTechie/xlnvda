@@ -331,11 +331,18 @@ class MainFrame(wx.Frame):
 		response = messageBox(
 			_(
 				# Translators: Explain the COM Registration Fixing tool to users before running
-				"You are about to run the COM Registration Fixing tool. "
-				"This tool will try to fix common system problems that stop NVDA from being "
-				"able to access content in many programs including Firefox and Internet "
-				"Explorer. This tool must make changes to the System registry and therefore "
-				"requires administrative access. Do you wish to proceed?"
+				"Welcome to the COM Registration Fixing tool.\n"
+				"This tool is used by NVDA to fix certain problems with your computer's registry, that may be "
+				"preventing you from reading certain content.\nYou may benefit from running this tool if you are"
+				' experiencing any of these problems:\nIf you are hearing the word "unknown" or "pane" '
+				"spoken when you are trying to read pages in web browsers.\n"
+				"If certain controls don't seem to be working on web pages, but they did in the past.\n"
+				"The Windows task bar, desktop, notification area, or other components have stopped being read "
+				"as you expect.\nIf you are having any of these issues, please try running this tool.\n"
+				"It will ask for administrative permission, so it can check and repair values in your "
+				"Windows registry. This happens automatically when NVDA is installed, but things like "
+				"uninstalling software and Windows updates, can damage the registry entries NVDA needs to "
+				"work well.\nDo you wish to try to repair the registry at this time?"
 			),
 			# Translators: The title of the info dialog displayed when launching the COM Registration Fixing tool
 			_("Fix COM Registrations"), wx.OK | wx.CANCEL | wx.ICON_INFORMATION, self,
