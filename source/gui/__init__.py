@@ -673,7 +673,7 @@ def quit():
 
 def messageBox(
 		message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=None,
-		OKLabel=wx.OK, CancelLabel=wx.CANCEL, YesLabel=wx.YES, NoLabel=wx.NO, HelpLabel=wx.HELP
+		OKLabel=wx.ID_OK, CancelLabel=wx.ID_CANCEL, YesLabel=wx.ID_YES, NoLabel=wx.ID_NO, HelpLabel=wx.ID_HELP
 ) -> int:
 	"""Display a message dialog.
 	This should be used for all message dialogs. Do not call C{wx.MessageDialog} and C{wx.MessageBox} directly,
