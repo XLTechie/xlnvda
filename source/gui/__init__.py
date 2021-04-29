@@ -620,7 +620,7 @@ def showGui():
 def quit():
 	wx.CallAfter(mainFrame.onExitCommand, None)
 
-def messageBox(message, caption=wx.MessageBoxCaptionStr, style=wx.OK | wx.CENTER, parent=None):
+def messageBox(message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=None, **kwargs):
 	"""Display a message dialog.
 	This should be used for all message dialogs
 	rather than using C{wx.MessageDialog} and C{wx.MessageBox} directly.
