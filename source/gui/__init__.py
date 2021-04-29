@@ -622,8 +622,8 @@ def quit():
 
 def messageBox(message, caption=wx.MessageBoxCaptionStr, style=wx.OK, parent=None, **kwargs):
 	"""Display a message dialog.
-	This should be used for all message dialogs
-	rather than using C{wx.MessageDialog} and C{wx.MessageBox} directly.
+	This should be used for all message dialogs. Do not call C{wx.MessageDialog} and C{wx.MessageBox} directly,
+	because they can cause NVDA to freeze if a dialog and a menu are open simultaneously. This method provides appropriate protections.
 	@param message: The message text.
 	@type message: str
 	@param caption: The caption (title) of the dialog.
