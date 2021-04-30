@@ -345,18 +345,23 @@ This tool is used by NVDA to fix interaction issues between NVDA and Windows and
 Because it may need to modify the Windows registry, if you have User Account Control (UAC) active, you will be prompted by UAC before it can do its job. This is normal and you should answer using the Yes button.
 
 Do you wish to try to repair the registry at this time?""")  # noqa: E501 Flake8 sees this block as one line
-		# This would be better done in a wx.MessageDialog, with OK | CANCEL buttons, relabeled
-		# to CONTINUE | CANCEL. YES | CANCEL is awkward, but we want CANCEL's red X and escape key abilities.
-		response = messageBox(
-			# Translators: The title of the warning dialog displayed when launching the COM Registration Fixing tool 
-			INTRO_MESSAGE, _("Fix COM Registrations"),
-			wx.YES_NO | wx.CANCEL | wx.HELP | wx.ICON_INFORMATION, self
-		)
-		# We don't care about a help button press; it was already handled by event in tempParent.
-		del tempParent
-		if response == wx.CANCEL or response == wx.NO:
-			log.debug("Run of COM Registration Fixing Tool canceled before UAC.")
-			return
+		# We loop here to handle the case of the help button.
+		while True:
+			# This would be better done in a wx.MessageDialog, with OK | CANCEL buttons, relabeled
+			# to CONTINUE | CANCEL. YES | CANCEL is awkward, but we want CANCEL's red X and escape key abilities.
+			response = messageBox(
+				# Translators: The title of the explanatory dialog displayed when launching the COM
+				# Registration Fixing tool.
+				INTRO_MESSAGE, _("Fix COM Registrations"),
+				wx.YES_NO | wx.CANCEL | wx.HELP | wx.ICON_INFORMATION, self
+			)
+			if response == wx.CANCEL or response == wx.NO:
+				log.debug("Run of COM Registration Fixing Tool canceled before UAC.")
+				return
+			elif response == wx.HELP:
+				contextHelp.showHelp("RunCOMRegistrationFixingTool")
+			else:  # wx.YES
+				break
 		progressDialog = IndeterminateProgressDialog(
 			mainFrame,
 			# Translators: The title of the dialog presented while NVDA is running the COM Registration fixing tool
