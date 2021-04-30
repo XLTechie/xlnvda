@@ -346,6 +346,7 @@ Because it may need to modify the Windows registry, if you have User Account Con
 
 Do you wish to try to repair the registry at this time?""")  # noqa: E501 Flake8 sees this block as one line
 		# We loop here to handle the case of the help button.
+		# That would be done more gracefully with context help, but that is not supported by gui.messageBox.
 		while True:
 			# This would be better done in a wx.MessageDialog, with OK | CANCEL buttons, relabeled
 			# to CONTINUE | CANCEL. YES | CANCEL is awkward, but we want CANCEL's red X and escape key abilities.
