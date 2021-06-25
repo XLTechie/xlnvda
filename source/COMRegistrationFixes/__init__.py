@@ -34,8 +34,12 @@ def register32bitServer(fileName: str) -> None:
 	"""
 	# Points to the 32-bit version, on Windows 32-bit or 64-bit.
 	regsvr32 = os.path.join(SYSTEM32, "regsvr32.exe")
+	# Make sure a console window doesn't show when running regsvr32.exe
+	startupInfo = subprocess.STARTUPINFO()
+	startupInfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+	startupInfo.wShowWindow = subprocess.SW_HIDE
 	try:
-		subprocess.check_call([regsvr32, "/s", fileName])
+		subprocess.check_call([regsvr32, "/s", fileName], startupinfo=startupInfo)
 	except subprocess.CalledProcessError as e:
 		log.error(f"Error registering {fileName} in a 32-bit context: {e}")
 	else:
@@ -50,8 +54,12 @@ def register64bitServer(fileName: str) -> None:
 	"""
 	# SysWOW64 provides a virtual directory to allow 32-bit programs to reach 64-bit executables.
 	regsvr32 = os.path.join(SYSNATIVE, "regsvr32.exe")
+	# Make sure a console window doesn't show when running regsvr32.exe
+	startupInfo = subprocess.STARTUPINFO()
+	startupInfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+	startupInfo.wShowWindow = subprocess.SW_HIDE
 	try:
-		subprocess.check_call([regsvr32, "/s", fileName])
+		subprocess.check_call([regsvr32, "/s", fileName], startupinfo=startupInfo)
 	except subprocess.CalledProcessError as e:
 		log.error(f"Error registering {fileName} in a 64-bit context: {e}")
 	else:
@@ -68,8 +76,12 @@ def apply32bitRegistryPatch(fileName: str) -> None:
 		raise FileNotFoundError(f"Cannot apply 32-bit registry patch: {fileName} not found.")
 	# On 32-bit systems, reg.exe is in System32. On 64-bit systems, SysWOW64 will redirect to 32-bit version.
 	regExe = os.path.join(SYSTEM_ROOT, "System32", "reg.exe")
+	# Make sure a console window doesn't show when running reg.exe
+	startupInfo = subprocess.STARTUPINFO()
+	startupInfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+	startupInfo.wShowWindow = subprocess.SW_HIDE
 	try:
-		subprocess.check_call([regExe, "import", fileName])
+		subprocess.check_call([regExe, "import", fileName], startupinfo=startupInfo)
 	except subprocess.CalledProcessError as e:
 		log.error(f"Error applying 32-bit registry patch from {fileName} with {regExe}: {e}")
 	else:
@@ -86,8 +98,12 @@ def apply64bitRegistryPatch(fileName: str) -> None:
 		raise FileNotFoundError(f"Cannot apply 64-bit registry patch: {fileName} not found.")
 	# On 64-bit systems, SysWOW64 provides 32-bit apps with a virtual directory to reach 64-bit executables.
 	regExe = os.path.join(SYSNATIVE, "reg.exe")
+	# Make sure a console window doesn't show when running reg.exe
+	startupInfo = subprocess.STARTUPINFO()
+	startupInfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+	startupInfo.wShowWindow = subprocess.SW_HIDE
 	try:
-		subprocess.check_call([regExe, "import", fileName])
+		subprocess.check_call([regExe, "import", fileName], startupinfo=startupInfo)
 	except subprocess.CalledProcessError as e:
 		log.error(f"Error applying 64-bit registry patch from {fileName} with {regExe}: {e}")
 	else:
