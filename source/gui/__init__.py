@@ -348,8 +348,7 @@ class MainFrame(wx.Frame):
 			log.error("Could not execute fixCOMRegistrations command",exc_info=True) 
 		progressDialog.done()
 		del progressDialog
-		# We get an F405 here because "gui may be undefined".
-		gui.messageBox(  # noqa F405
+		messageBox(
 			_(
 				# Translators: The message displayed when the COM Registration Fixing tool completes.
 				"The COM Registration Fixing tool has finished. "
