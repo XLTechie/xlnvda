@@ -40,12 +40,12 @@ class Context(_Context, Enum):
 	)
 
 
-def when(*contexts: Context):
+def when(*contexts: Context, altReturn=None):
 	"""Returns a function wrapper or altReturn.
 	A function decorated with `when` will return early if any supplied context in `contexts` is active.
 	The first supplied context to block will be reported as a message.
 	Consider supplying permanent conditions first.
-	When returning early, if keyword argument `altReturn` is provided, it will be returned instead of nothing.
+	When returning early, if `altReturn` is provided, it will be returned instead of nothing.
 	altReturn is anticipated to be a callable such as a function or class.
 
 	For example, to block a function when a modal dialog is open (a temporary condition)
@@ -60,7 +60,7 @@ def when(*contexts: Context):
 			for context in contexts:
 				if context.blockActionIf():
 					queueHandler.queueFunction(queueHandler.eventQueue, ui.message, context.translatedMessage)
-					return
+					return altReturn
 			return func(*args, **kwargs)
 		return funcWrapper
 	return _wrap
