@@ -10,7 +10,7 @@ import wx
 import globalVars
 import gui
 import gui.contextHelp
-from gui import blockAction
+from utils import blockAction
 
 
 #: The singleton instance of the log viewer UI.

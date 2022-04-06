@@ -27,7 +27,7 @@ from .message import (
 	# be cautious when removing
 	messageBox,
 )
-from . import blockAction
+from utils import blockAction
 from .speechDict import (
 	DefaultDictionaryDialog,
 	VoiceDictionaryDialog,
