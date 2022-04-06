@@ -9,7 +9,7 @@ import typing
 
 import wx
 
-from gui import blockAction
+from utils import blockAction
 from logHandler import log
 import documentationUtils
 

@@ -14,7 +14,7 @@ import os
 import weakref
 import time
 from typing import Dict, Any, Tuple, List, Union
-from gui import blockAction
+from utils import blockAction
 import configobj
 from speech import sayAll
 import baseObject
