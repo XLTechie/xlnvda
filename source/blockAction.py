@@ -41,14 +41,18 @@ class Context(_Context, Enum):
 
 
 def when(*contexts: Context):
-	"""Returns a function wrapper.
-	A function decorated with `when` will exit early if any supplied context in `contexts` is active.
+	"""Returns a function wrapper or altReturn.
+	A function decorated with `when` will return early if any supplied context in `contexts` is active.
 	The first supplied context to block will be reported as a message.
 	Consider supplying permanent conditions first.
+	When returning early, if keyword argument `altReturn` is provided, it will be returned instead of nothing.
+	altReturn is anticipated to be a callable such as a function or class.
 
 	For example, to block a function when a modal dialog is open (a temporary condition)
 	and in the Windows Store version (per installation), decorate it with
 	`@blockAction.when(blockAction.Context.WINDOWS_STORE_VERSION, blockAction.Context.MODAL_DIALOG_OPEN)`.
+	To keep an add-on from running on secure screens, decorate the GlobalPlugin class with:
+	`@blockAction.when(blockAction.Context.SECURE_MODE, altReturn=globalPluginHandler.GlobalPlugin)`
 	"""
 	def _wrap(func):
 		@wraps(func)
