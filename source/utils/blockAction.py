@@ -54,7 +54,7 @@ def when(*contexts: Context, altReturn=None):
 	To keep an add-on from running on secure screens, decorate the GlobalPlugin class with:
 	`@blockAction.when(blockAction.Context.SECURE_MODE, altReturn=globalPluginHandler.GlobalPlugin)`
 	"""
-	def _wrap(func):
+	def wrap(func):
 		@wraps(func)
 		def funcWrapper(*args, **kwargs):
 			for context in contexts:
@@ -63,4 +63,4 @@ def when(*contexts: Context, altReturn=None):
 					return altReturn
 			return func(*args, **kwargs)
 		return funcWrapper
-	return _wrap
+	return wrap
