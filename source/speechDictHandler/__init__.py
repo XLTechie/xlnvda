@@ -15,7 +15,7 @@ from . import dictFormatUpgrade
 from .speechDictVars import speechDictsPath
 
 dictionaries = {}
-dictTypes = ("temp", "voice", "default", "builtin") # ordered by their priority E.G. voice specific speech dictionary is processed before the default
+dictTypes = ("voice", "default", "temp", "builtin") # ordered by their priority E.G. voice specific speech dictionary is processed before the default
 
 # Types of speech dictionary entries:
 ENTRY_TYPE_ANYWHERE = 0 # String can match anywhere
