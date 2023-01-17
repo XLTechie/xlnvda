@@ -123,7 +123,7 @@ def processText(text: str) -> str:
 		newText = dictionaries[type].sub(text)
 		# To stop intra-dictionary and inter-dictionary cascade replacements, break on successful replacement
 		if newText != text:
-			break
+			return newText
 	return newText
 
 
