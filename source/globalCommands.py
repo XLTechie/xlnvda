@@ -2,9 +2,9 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2006-2022 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista, Joseph Lee,
+# Copyright (C) 2006-2023 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista, Joseph Lee,
 # Leonard de Ruijter, Derek Riemer, Babbage B.V., Davy Kager, Ethan Holliger, Łukasz Golonka, Accessolutions,
-# Julien Cochuyt, Jakub Lukowicz, Bill Dengler, Cyrille Bougot, Rob Meredith
+# Julien Cochuyt, Jakub Lukowicz, Bill Dengler, Cyrille Bougot, Rob Meredith, Luke Davis
 
 import itertools
 from typing import (
@@ -3627,6 +3627,54 @@ class GlobalCommands(ScriptableObject):
 		NVDAObject.clearDynamicClassCache()
 		# Translators: Presented when plugins (app modules and global plugins) are reloaded.
 		ui.message(_("Plugins reloaded"))
+
+	@script(
+		description=_(
+			# Translators: input help mode message for Report destination URL of navigator link command
+			"Report the destination URL of the link in the navigator object. "
+			"If pressed twice, shows the URL in a window for easier review."
+		),
+		gesture="kb:NVDA+k",
+		category=SCRCAT_TOOLS
+	)
+	def script_reportLinkDestination(
+			self, gesture: inputCore.InputGesture, forceBrowseable: bool = False
+	) -> None:
+		"""Generates a ui.message or ui.browseableMessage of a link's destination, if the navigator
+		object is a link, or an element with an included link such as a graphic.
+		@param forceBrowseable: skips the press once check, and displays the browseableMessage version.
+		"""
+		obj = api.getNavigatorObject()
+		if (
+			obj.role == controlTypes.role.Role.LINK  # If it's a link, or
+			or controlTypes.state.State.LINKED in obj.states  # if it isn't a link but contains one
+		):
+			if (
+				forceBrowseable  # If a browseable message is preferred unconditionally, or
+				or scriptHandler.getLastScriptRepeatCount() > 0  # if pressed more than once
+			):
+				# Translators: Informs the user that the window contains the destination of the
+				# link with given title
+				ui.browseableMessage(obj.value, title=_("Destination of: {name}").format(name=obj.name))
+			else:
+				ui.message(obj.value)  # Speak the link
+		else:
+			# Translators: Tell user that the command has been run on something that is not a link
+			ui.message(_("Not a link."))
+
+	@script(
+		description=_(
+			# Translators: input help mode message for Report URL of navigator link in a window command
+			"Reports the destination URL of the link in the navigator object in a window, "
+			"instead of just speaking it. May be preferred by braille users."
+		),
+		category=SCRCAT_TOOLS
+	)
+	def script_reportLinkDestinationInWindow(self, gesture: inputCore.InputGesture) -> None:
+		"""Uses the forceBrowseable flag of script_reportLinkDestination, to generate a
+		ui.browseableMessage of a link's destination.
+		"""
+		self.script_reportLinkDestination(gesture, True)
 
 	@script(
 		# Translators: Input help mode message for a touchscreen gesture.
