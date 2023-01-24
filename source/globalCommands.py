@@ -3629,6 +3629,50 @@ class GlobalCommands(ScriptableObject):
 		ui.message(_("Plugins reloaded"))
 
 	@script(
+		description=_(
+			# Translators: input help mode message for speak destination URL of navigator link command
+			"Speak the destination URL for the link based on the navigator object. "
+			"If pressed twice, displays the URL in a browseable message."
+		),
+		gesture="kb:NVDA+k",
+		category=SCRCAT_TOOLS
+		)
+	def script_speakOrBrowseLinkDestination(self, gesture) -> None:
+		if scriptHandler.getLastScriptRepeatCount() == 0:  # If pressed once
+			self._speakOrDisplayLinkDestination(False)
+		else:  # If pressed more than once
+			self._speakOrDisplayLinkDestination(True)
+
+	@script(
+		description=_(
+			# Translators: input help mode message for Display URL of navigator link in browseable message command
+			"Displays the destination URL of the link in the navigator object in a browseable "
+			"message, instead of just speaking it."
+		),
+		category=SCRCAT_TOOLS
+		)
+	def script_browseLinkDestination(self, gesture) -> None:
+		self._speakOrDisplayLinkDestination(True)
+
+	def _speakOrDisplayLinkDestination(self, browseableOutput: bool) -> None:
+		"""A helper function for GlobalCommands.script_speakOrBrowseLinkDestination and
+		GlobalCommands.script_browseLinkDestination, which provides a ui.message or ui.browseableMessage
+		of a link's destination, if the navigator object is a link.
+		@param browseableOutput: True to output a browseable message, False to output an ephemeral message
+		"""
+		obj = api.getNavigatorObject()
+		if obj.role == controlTypes.role.Role.LINK  # If it's a link, or
+			or controlTypes.state.State.LINKED in obj.states:  # if it isn't a link but contains one
+			if not browseableOutput:
+				ui.message(obj.value)  ## Speak the link
+			else:  
+				# Translators: Informs the user that the window contains the destination of the link with given title
+				ui.browseableMessage(obj.value, title=_("Destination of: {name}").format(name=obj.name))
+		else:
+			# Translators: informs the user that the command has been run on something that is not a link
+			ui.message(_("Not a link."))
+
+	@script(
 		# Translators: Input help mode message for a touchscreen gesture.
 		description=_("Moves to the next object in a flattened view of the object navigation hierarchy"),
 		category=SCRCAT_OBJECTNAVIGATION,
