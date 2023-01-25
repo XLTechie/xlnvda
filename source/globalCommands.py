@@ -3637,7 +3637,9 @@ class GlobalCommands(ScriptableObject):
 		gesture="kb:NVDA+k",
 		category=SCRCAT_TOOLS
 	)
-	def script_reportLinkDestination(self, gesture: inputCore.InputGesture, forceBrowseable: bool = False) -> None:
+	def script_reportLinkDestination(
+			self, gesture: inputCore.InputGesture, forceBrowseable: bool = False
+	) -> None:
 		"""Generates a ui.message or ui.browseableMessage of a link's destination, if the navigator
 		object is a link, or an element with an included link such as a graphic.
 		@param forceBrowseable: skips the press once check, and displays the browseableMessage version.
