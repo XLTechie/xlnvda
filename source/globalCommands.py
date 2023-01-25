@@ -3636,12 +3636,11 @@ class GlobalCommands(ScriptableObject):
 		),
 		gesture="kb:NVDA+k",
 		category=SCRCAT_TOOLS
-		)
-	def script_reportLinkDestination(self, gesture, forceBrowseable: bool = False) -> None:
+	)
+	def script_reportLinkDestination(self, gesture: inputCore.InputGesture, forceBrowseable: bool = False) -> None:
 		"""Generates a ui.message or ui.browseableMessage of a link's destination, if the navigator
 		object is a link, or an element with an included link such as a graphic.
 		@param forceBrowseable: skips the press once check, and displays the browseableMessage version.
-		@type forceBrowseable: bool
 		"""
 		obj = api.getNavigatorObject()
 		if (
@@ -3655,7 +3654,7 @@ class GlobalCommands(ScriptableObject):
 				# Translators: Informs the user that the window contains the destination of the
 				# link with given title
 				ui.browseableMessage(obj.value, title=_("Destination of: {name}").format(name=obj.name))
-			else:  
+			else:
 				ui.message(obj.value)  # Speak the link
 		else:
 			# Translators: Tell user that the command has been run on something that is not a link
@@ -3668,8 +3667,11 @@ class GlobalCommands(ScriptableObject):
 			"instead of just speaking it. May be preferred by braille users."
 		),
 		category=SCRCAT_TOOLS
-		)
-	def script_reportLinkDestinationInWindow(self, gesture) -> None:
+	)
+	def script_reportLinkDestinationInWindow(self, gesture: inputCore.InputGesture) -> None:
+		"""Uses the forceBrowseable flag of script_reportLinkDestination, to generate a
+		ui.browseableMessage of a link's destination.
+		"""
 		self.script_reportLinkDestination(gesture, True)
 
 	@script(
