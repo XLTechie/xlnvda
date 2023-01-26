@@ -3651,7 +3651,7 @@ class GlobalCommands(ScriptableObject):
 		):
 			if (
 				forceBrowseable  # If a browseable message is preferred unconditionally, or
-				or scriptHandler.getLastScriptRepeatCount() > 0  # if pressed more than once
+				or scriptHandler.getLastScriptRepeatCount() == 1  # if pressed twice
 			):
 				# Translators: Informs the user that the window contains the destination of the
 				# link with given title
