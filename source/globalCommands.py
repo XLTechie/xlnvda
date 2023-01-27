@@ -3645,19 +3645,22 @@ class GlobalCommands(ScriptableObject):
 		@param forceBrowseable: skips the press once check, and displays the browseableMessage version.
 		"""
 		obj = api.getNavigatorObject()
+		presses = scriptHandler.getLastScriptRepeatCount()
 		if (
 			obj.role == controlTypes.role.Role.LINK  # If it's a link, or
 			or controlTypes.state.State.LINKED in obj.states  # if it isn't a link but contains one
 		):
 			if (
-				forceBrowseable  # If a browseable message is preferred unconditionally, or
-				or scriptHandler.getLastScriptRepeatCount() == 1  # if pressed twice
+				presses == 1  # If pressed twice, or
+				or forceBrowseable  # if a browseable message is preferred unconditionally
 			):
 				# Translators: Informs the user that the window contains the destination of the
 				# link with given title
 				ui.browseableMessage(obj.value, title=_("Destination of: {name}").format(name=obj.name))
-			else:
+			elif presses == 0:  # One press
 				ui.message(obj.value)  # Speak the link
+			else:  # Some other number of presses
+				return  # Do nothing
 		else:
 			# Translators: Tell user that the command has been run on something that is not a link
 			ui.message(_("Not a link."))
