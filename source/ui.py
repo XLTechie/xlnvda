@@ -84,6 +84,7 @@ def _warnBrowsableMessageNotAvailableOnSecureScreens(title: Optional[str]) -> No
 def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = False) -> None:
 	"""Present a message to the user that can be read in browse mode.
 	The message will be presented in an HTML document.
+	A comment describing how to exit the dialog is appended to the title.
 	@param message: The message in either html or text.
 	@param title: The title for the message.
 	@param isHtml: Whether the message is html
@@ -93,6 +94,12 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 		wx.CallAfter(_warnBrowsableMessageNotAvailableOnSecureScreens, title)
 		return
 
+	# Translators: a message appended to title, informing the user how to close the dialog
+	closeMsg = _("Press escape to close")
+	# In comments on #14641, it was suggested that the above message should change if the user is
+	# making use of touch/braille escape functions instead of the keyboard.
+	# Translators: a punctuation or seperator, placed between the title and the appended close message
+	titleSeparator = _(" | ")
 	htmlFileName = os.path.join(globalVars.appDir, 'message.html')
 	if not os.path.isfile(htmlFileName ): 
 		raise LookupError(htmlFileName )
@@ -103,7 +110,7 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 		title = _("NVDA Message")
 	if not isHtml:
 		message = f"<pre>{escape(message)}</pre>"
-	dialogString = f"{title};{message}"
+	dialogString = f"{title}{titleSeparator}{closeMsg};{message}"
 	dialogArguements = automation.VARIANT( dialogString )
 	gui.mainFrame.prePopup() 
 	windll.mshtml.ShowHTMLDialogEx( 
