@@ -95,11 +95,11 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 		return
 
 	# Translators: a message appended to title, informing the user how to close the dialog
-	closeMsg = _("Press escape to close")
+	closeMsg = _("Press escape to exit")
 	# In comments on #14641, it was suggested that the above message should change if the user is
 	# making use of touch/braille escape functions instead of the keyboard.
 	# Translators: a punctuation or seperator, placed between the title and the appended close message
-	titleSeparator = _(" | ")
+	titleSeparator = _(", ")
 	htmlFileName = os.path.join(globalVars.appDir, 'message.html')
 	if not os.path.isfile(htmlFileName ): 
 		raise LookupError(htmlFileName )
