@@ -84,6 +84,7 @@ def _warnBrowsableMessageNotAvailableOnSecureScreens(title: Optional[str]) -> No
 def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = False) -> None:
 	"""Present a message to the user that can be read in browse mode.
 	The message will be presented in an HTML document.
+	A button will be appended to the document giving the user a way to close the dialog.
 	@param message: The message in either html or text.
 	@param title: The title for the message.
 	@param isHtml: Whether the message is html
