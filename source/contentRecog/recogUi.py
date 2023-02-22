@@ -34,7 +34,7 @@ class RecogResultNVDAObject(cursorManager.CursorManager, NVDAObjects.window.Wind
 
 	role = controlTypes.Role.DOCUMENT
 	# Translators: The title of the document used to present the result of content recognition.
-	name = _("Result")
+	name = _("Result, press escape to exit")
 	treeInterceptor = None
 
 	def __init__(self, result=None, obj=None):
