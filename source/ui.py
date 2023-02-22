@@ -104,7 +104,10 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 		title = _("NVDA Message")
 	if not isHtml:
 		message = f"<pre>{escape(message)}</pre>"
-	dialogString = f"{title};{message}"
+	# Translators: The text of a button which instructs the user to press escape or select the button to close
+	# the browseableMessage
+	closeText = _("Select here or press escape to close this window.")
+	dialogString = f"{title};{closeText};{message}"
 	dialogArguements = automation.VARIANT( dialogString )
 	gui.mainFrame.prePopup() 
 	windll.mshtml.ShowHTMLDialogEx( 
