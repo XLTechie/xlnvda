@@ -23,6 +23,16 @@ function windowOnLoad() {
 </SCRIPT>
 </HEAD>
 <BODY tabindex='0' id='main_body' style="margin:1em" LANGUAGE=javascript onload="return windowOnLoad()" onkeypress="return escapeKeyPress()" >
+<div><p>Debugging variables.</p>
+<p>raw:<br>
+<span><script>
+document.write(window.dialogArguments)
+</script></span></p>
+<p>Not raw:<br>
+<span><script>
+document.write(JSON.parse(window.dialogArguments))
+</script></span></p>
+</div>
 <div id=messageID></div>
 </body>
 </html>
