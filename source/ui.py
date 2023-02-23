@@ -12,6 +12,7 @@ See L{gui} for the graphical user interface.
 
 import os
 import sys
+import json
 from ctypes import windll, byref, POINTER, addressof
 from comtypes import IUnknown
 from comtypes import automation 
@@ -22,7 +23,7 @@ import speech
 import braille
 from config.configFlags import TetherTo
 import globalVars
-from typing import Optional
+from typing import Optional, Dict
 
 from systemUtils import _isSecureDesktop
 
@@ -89,6 +90,7 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 	@param isHtml: Whether the message is html
 	"""
 	splitWith: str = "__NVDA:split-here__"  # Unambiguous regex splitter for javascript in message.html, #14667
+	document: Dict[str, str] = {}
 	if _isSecureDesktop():
 		import wx  # Late import to prevent circular dependency.
 		wx.CallAfter(_warnBrowsableMessageNotAvailableOnSecureScreens, title)
@@ -101,10 +103,14 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 	windll.urlmon.CreateURLMonikerEx(0, htmlFileName, byref(moniker), URL_MK_UNIFORM)
 	if not title:
 		# Translators: The title for the dialog used to present general NVDA messages in browse mode.
-		title = _("NVDA Message")
+		document["title"] = _("NVDA Message")
+	else:
+		document["title"] = title
 	if not isHtml:
-		message = f"<pre>{escape(message)}</pre>"
-	dialogString = f"{title}{splitWith}{message}"
+		document["message"] = f"<pre>{escape(message)}</pre>"
+	else:
+		document["message"] = message
+	dialogString = json.dumps(document, ensure_ascii=False, allow_nan=False, skipkeys=True)
 	dialogArguements = automation.VARIANT( dialogString )
 	gui.mainFrame.prePopup() 
 	windll.mshtml.ShowHTMLDialogEx( 
