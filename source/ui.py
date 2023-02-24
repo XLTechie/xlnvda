@@ -111,14 +111,14 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 	else:
 		documentVars["message"] = message
 	dialogString = json.dumps(documentVars, ensure_ascii=False, allow_nan=False, skipkeys=True)
-	dialogArguements = automation.VARIANT(dialogString)
+	dialogArguments = automation.VARIANT(dialogString)
 	log.debug(f"documentVars: {documentVars}\ndialogString: {dialogString}\ndialogArguments: {dialogArguments}")
 	gui.mainFrame.prePopup() 
 	windll.mshtml.ShowHTMLDialogEx(
 		gui.mainFrame.Handle,
 		moniker,
 		HTMLDLG_MODELESS,
-		addressof(dialogArguements),
+		addressof(dialogArguments),
 		DIALOG_OPTIONS,
 		None
 	)
