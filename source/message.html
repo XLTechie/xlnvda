@@ -17,6 +17,10 @@ function windowOnLoad() {
 	var args = JSON.parse(window.dialogArguments);
 	// args[0] is the whole string.
 	document.title= args.title;
+	dbgRaw.innerHTML = window.dialogArguments;
+	dbgTitle1.innerHTML = window.dialogArguments.title;
+	dbgTitle2.innerHTML = args.title;
+	dbgNotRaw.innerHTML = JSON.parse(window.dialogArguments);
 	messageID.innerHTML= args.message;
 } 
 //-->
@@ -24,14 +28,13 @@ function windowOnLoad() {
 </HEAD>
 <BODY tabindex='0' id='main_body' style="margin:1em" LANGUAGE=javascript onload="return windowOnLoad()" onkeypress="return escapeKeyPress()" >
 <div><p>Debugging variables.</p>
-<p>raw:<br>
-<span><script>
-document.write(window.dialogArguments)
-</script></span></p>
-<p>Not raw:<br>
-<span><script>
-document.write(JSON.parse(window.dialogArguments))
-</script></span></p>
+<p>Raw:<br />
+<pre id=dbgRaw></pre></p>
+<p>title 1: <span id=dbgTitle1></span><br />
+Title 2: <span id=dbgTitle2></span></p>
+<p>Not raw:<br />
+<pre id=dbgNotRaw></pre></p>
+<hr>
 </div>
 <div id=messageID></div>
 </body>
