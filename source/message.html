@@ -17,11 +17,13 @@ function windowOnLoad() {
 	var args = JSON.parse(window.dialogArguments);
 	// args[0] is the whole string.
 	document.title= args.title;
-	dbgRaw.innerHTML = window.dialogArguments;
-	dbgTitle1.innerHTML = window.dialogArguments.title;
-	dbgTitle2.innerHTML = args.title;
-	dbgNotRaw.innerHTML = JSON.parse(window.dialogArguments);
-	messageID.innerHTML= args.message;
+	document.getElementById("dbgRaw").innerHTML = window.dialogArguments;
+	document.getElementById("dbgTitle1").innerHTML = window.dialogArguments.title;
+	document.getElementById("dbgTitle2").innerHTML = window.dialogArguments["title"];
+	document.getElementById("dbgTitle3").innerHTML = args.title;
+	document.getElementById("dbgTitle4").innerHTML = args["title"];
+	document.getElementById("dbgNotRaw").innerHTML = JSON.parse(window.dialogArguments);
+	document.getElementById("messageID").innerHTML = args[1];
 } 
 //-->
 </SCRIPT>
@@ -30,12 +32,14 @@ function windowOnLoad() {
 <div><p>Debugging variables.</p>
 <p>Raw:<br />
 <pre id=dbgRaw></pre></p>
-<p>title 1: <span id=dbgTitle1></span><br />
-Title 2: <span id=dbgTitle2></span></p>
+<p>title 1: <span id="dbgTitle1"></span><br />
+Title 2: <span id="dbgTitle2"></span></p>
+Title 3: <span id="dbgTitle3"></span></p>
+Title 4: <span id="dbgTitle4"></span></p>
 <p>Not raw:<br />
-<pre id=dbgNotRaw></pre></p>
-<hr>
+<pre id="dbgNotRaw"></pre></p>
 </div>
+<hr>
 <div id=messageID></div>
 </body>
 </html>
