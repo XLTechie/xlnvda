@@ -74,6 +74,26 @@ DONATE_URL = "http://www.nvaccess.org/donate/"
 mainFrame = None
 
 
+def restoreFocusAfter(guiMethod: Callable) -> Any:
+	"""A wrapper which calls L{mainFrame.prePopup} and L{mainFrame.postPopup}, around any NVDA gui function
+	that creates a dialog.
+	Has the side effect that L{mainFrame.postPopup} gets called even if the method exits early."""
+	@wraps(guiMethod)
+	def wrapper_restoreFocusAfter(*args, **kwargs) -> Any:
+		log.debug(f"Calling prePopup for {guiMethod.__name__}")
+		mainFrame.prePopup()
+		try:
+			ret: Any = guiMethod(*args, **kwargs)
+		except:  # Catch any exception and raise it to the caller, we don't care here
+			raise
+		else:  # Successful run, return outcome to caller
+			return ret
+		finally:  # Whether raising or returning, run postPopup
+			log.debug(f"Calling postPopup for {guiMethod.__name__}")
+			mainFrame.postPopup()
+	return wrapper_restoreFocusAfter
+
+
 class MainFrame(wx.Frame):
 
 	def __init__(self):
@@ -134,16 +154,6 @@ class MainFrame(wx.Frame):
 			self.Show()
 			self.Hide()
 
-	def restoreFocusAfter(self, guiMethod: Callable) -> Any:
-		"""A wrapper which calls L{prePopup} and L{postPopup} around any C{gui} function that creates a dialog."""
-		@wraps(guiMethod)
-		def wrapper_restoreFocusAfter(*args, **kwargs) -> Any:
-			self.prePopup()
-			ret: Any = guiMethod(*args, **kwargs)
-			self.postPopup()
-			return ret
-		return wrapper_restoreFocusAfter
-
 	def showGui(self):
 		# The menu pops up at the location of the mouse, which means it pops up at an unpredictable location.
 		# Therefore, move the mouse to the center of the screen so that the menu will always pop up there.
@@ -172,8 +182,8 @@ class MainFrame(wx.Frame):
 			messageBox(_("Could not save configuration - probably read only file system"),_("Error"),wx.OK | wx.ICON_ERROR)
 
 	@blockAction.when(blockAction.Context.MODAL_DIALOG_OPEN)
+	@gui.restoreFocusAfter
 	def _popupSettingsDialog(self, dialog, *args, **kwargs):
-		self.prePopup()
 		try:
 			dialog(self, *args, **kwargs).Show()
 		except SettingsDialog.MultiInstanceErrorWithDialog as errorWithDialog:
@@ -182,8 +192,6 @@ class MainFrame(wx.Frame):
 			# Translators: Message shown when trying to open an unavailable category of a multi category settings dialog
 			# (example: when trying to open touch interaction settings on an unsupported system).
 			messageBox(_("The settings panel you tried to open is unavailable on this system."),_("Error"),style=wx.OK | wx.ICON_ERROR)
-
-		self.postPopup()
 
 	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onDefaultDictionaryCommand(self, evt):
@@ -332,12 +340,11 @@ class MainFrame(wx.Frame):
 		blockAction.Context.SECURE_MODE,
 		blockAction.Context.MODAL_DIALOG_OPEN,
 	)
+	@gui.restoreFocusAfter
 	def onAddonsManagerCommand(self,evt):
-		self.prePopup()
 		from .addonGui import AddonsDialog
 		d=AddonsDialog(gui.mainFrame)
 		d.Show()
-		self.postPopup()
 
 	def onReloadPluginsCommand(self, evt):
 		import appModuleHandler, globalPluginHandler
@@ -350,12 +357,11 @@ class MainFrame(wx.Frame):
 		blockAction.Context.SECURE_MODE,
 		blockAction.Context.MODAL_DIALOG_OPEN,
 	)
+	@gui.restoreFocusAfter
 	def onCreatePortableCopyCommand(self,evt):
-		self.prePopup()
 		import gui.installerGui
 		d=gui.installerGui.PortableCreaterDialog(gui.mainFrame)
 		d.Show()
-		self.postPopup()
 
 	@blockAction.when(
 		blockAction.Context.SECURE_MODE,
@@ -402,11 +408,10 @@ class MainFrame(wx.Frame):
 		)
 
 	@blockAction.when(blockAction.Context.MODAL_DIALOG_OPEN)
+	@gui.restoreFocusAfter
 	def onConfigProfilesCommand(self, evt):
-		self.prePopup()
 		from .configProfiles import ProfilesDialog
 		ProfilesDialog(gui.mainFrame).Show()
-		self.postPopup()
 
 
 class SysTrayIcon(wx.adv.TaskBarIcon):
