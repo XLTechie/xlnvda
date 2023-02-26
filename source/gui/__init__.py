@@ -11,6 +11,9 @@ import threading
 import ctypes
 import wx
 import wx.adv
+from functools import wraps
+from typing import Any, Callable
+
 import globalVars
 import tones
 import ui
@@ -130,6 +133,16 @@ class MainFrame(wx.Frame):
 			# Showing and hiding our main window seems to achieve this.
 			self.Show()
 			self.Hide()
+
+	def restoreFocusAfter(self, guiMethod: Callable) -> Any:
+		"""A wrapper which calls L{prePopup} and L{postPopup} around any C{gui} function that creates a dialog."""
+		@wraps(guiMethod)
+		def wrapper_restoreFocusAfter(*args, **kwargs) -> Any:
+			self.prePopup()
+			ret: Any = guiMethod(*args, **kwargs)
+			self.postPopup()
+			return ret
+		return wrapper_restoreFocusAfter
 
 	def showGui(self):
 		# The menu pops up at the location of the mouse, which means it pops up at an unpredictable location.
