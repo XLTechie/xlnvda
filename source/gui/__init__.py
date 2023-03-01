@@ -11,8 +11,8 @@ import threading
 import ctypes
 import wx
 import wx.adv
-from functools import wraps
-from typing import Any, Callable
+from functools import wraps, partial
+from typing import Any, Callable, Optional
 
 import globalVars
 import tones
@@ -74,24 +74,38 @@ DONATE_URL = "http://www.nvaccess.org/donate/"
 mainFrame = None
 
 
-def restoreFocusAfter(guiMethod: Callable) -> Any:
-	"""A wrapper which calls L{mainFrame.prePopup} and L{mainFrame.postPopup}, around any NVDA gui function
+def restoreFocusAfter(decoratedFunc: Optional[Callable], *, test: Optional[Callable]) -> Callable:
+	"""A decorator which calls L{mainFrame.prePopup} and L{mainFrame.postPopup}, around any NVDA gui function
 	that creates a dialog.
-	Has the side effect that L{mainFrame.postPopup} gets called even if the method exits early."""
-	@wraps(guiMethod)
-	def wrapper_restoreFocusAfter(*args, **kwargs) -> Any:
-		log.debug(f"Calling prePopup for {guiMethod.__name__}")
-		mainFrame.prePopup()
+	Has the side effect that L{mainFrame.postPopup} gets called even if the decorated method exits early.
+	@param test: if set, the result of the callable determines whether pre/postPopup should run.
+	@returns Callable: a function wrapper.
+	"""
+	if decoratedFunc is None:
+		return partial(restoreFocusAfter, test=test)
+	@wraps(decoratedFunc)
+	def wrapper(*args, **kwargs):
+		global mainFrame
+		if test is None:
+			runPrePost = True
+		else:  # We have a test to run
+			runPrePost = test()
+		if runPrePost:
+			log.debug(f"Calling prePopup for {decoratedFunc.__name__}")
+			mainFrame.prePopup()
+		else:
+			log.debug(f"Not calling prePopup/postPopup for {decoratedFunc.__name__}.")
 		try:
-			ret: Any = guiMethod(*args, **kwargs)
+			valueReturnedFromDecoratedFunc: Any = decoratedFunc(*args, **kwargs)
 		except:  # Catch any exception and raise it to the caller, we don't care here
 			raise
 		else:  # Successful run, return outcome to caller
-			return ret
+			return valueReturnedFromDecoratedFunc
 		finally:  # Whether raising or returning, run postPopup
-			log.debug(f"Calling postPopup for {guiMethod.__name__}")
-			mainFrame.postPopup()
-	return wrapper_restoreFocusAfter
+			if runPrePost:
+				log.debug(f"Calling postPopup for {decoratedFunc.__name__}")
+				mainFrame.postPopup()
+	return wrapper
 
 
 class MainFrame(wx.Frame):
