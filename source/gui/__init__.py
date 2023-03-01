@@ -74,7 +74,7 @@ DONATE_URL = "http://www.nvaccess.org/donate/"
 mainFrame = None
 
 
-def restoreFocusAfter(decoratedFunc: Optional[Callable], *, test: Optional[Callable]) -> Callable:
+def restoreFocusAfter(decoratedFunc: Optional[Callable]=None, *, test: Optional[Callable]=None) -> Callable:
 	"""A decorator which calls L{mainFrame.prePopup} and L{mainFrame.postPopup}, around any NVDA gui function
 	that creates a dialog.
 	Has the side effect that L{mainFrame.postPopup} gets called even if the decorated method exits early.
