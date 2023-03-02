@@ -364,19 +364,11 @@ class MainFrame(wx.Frame):
 			_("Warning"),wx.YES|wx.NO|wx.ICON_WARNING,self
 		)==wx.NO:
 			return
-		progressDialog = IndeterminateProgressDialog(mainFrame,
-			# Translators: The title of the dialog presented while NVDA is running the COM Registration fixing tool 
-			_("COM Registration Fixing Tool"),
-			# Translators: The message displayed while NVDA is running the COM Registration fixing tool 
-			_("Please wait while NVDA tries to fix your system's COM registrations.")
-		)
 		try:
 			import systemUtils
 			systemUtils.execElevated(config.SLAVE_FILENAME, ["fixCOMRegistrations"])
 		except:
 			log.error("Could not execute fixCOMRegistrations command",exc_info=True) 
-		progressDialog.done()
-		del progressDialog
 		messageBox(
 			_(
 				# Translators: The message displayed when the COM Registration Fixing tool completes.
