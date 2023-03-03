@@ -364,6 +364,8 @@ class MainFrame(wx.Frame):
 			_("Warning"),wx.YES|wx.NO|wx.ICON_WARNING,self
 		)==wx.NO:
 			return
+		# Translators: Ask user to wait while COM registrations are repaired.
+		ui.message(_("Please wait while your COM Registrations are repaired."), speechPriority=speech.priorities.SpeechPriority.NOW)
 		try:
 			import systemUtils
 			systemUtils.execElevated(config.SLAVE_FILENAME, ["fixCOMRegistrations"])
