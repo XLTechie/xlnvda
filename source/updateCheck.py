@@ -89,6 +89,15 @@ update check at the same time. Or, an add-on may want to block update checks whi
 Handlers are called with a bool flag indicating whether this was an automatic update check.
 """
 
+decide_installUpdate = extensionPoints.Decider()
+"""
+Notifies when an update is about to be installed, and allows components or add-ons to decide whether the
+update should actually be installed, or perform interveaning tasks.
+For example, an add-on may need to do some cleanup before installing an update,
+or perform a backup of revertable version-sensitive data.
+Handlers are given the same destPath parameter originally given to _executeUpdate().
+"""
+
 
 def getQualifiedDriverClassNameForStats(cls):
 	""" fetches the name from a given synthDriver or brailleDisplay class, and appends core for in-built code, the add-on name for code from an add-on, or external for code in the NVDA user profile.
@@ -120,7 +129,7 @@ def checkForUpdate(auto: bool = False) -> Optional[Dict]:
 	"""
 	if not decide_checkForUpdate.decide(auto=auto):
 		log.debug("Update check canceled by handler registered to decide_checkForUpdate extension point")
-		return
+		return None
 	allowUsageStats=config.conf["update"]['allowUsageStats']
 	# #11837: build version string, service pack, and product type manually
 	# because winVersion.getWinVer adds Windows release name.
@@ -227,6 +236,9 @@ def executePendingUpdate():
 
 def _executeUpdate(destPath):
 	if not destPath:
+		return
+	if not decide_installUpdate.decide(destPath=destPath):
+		log.debug("Update installation canceled by handler registered to decide_installUpdate extension point")
 		return
 
 	_setStateToNone(state)
