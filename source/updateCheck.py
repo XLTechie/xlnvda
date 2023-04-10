@@ -54,6 +54,7 @@ import shellapi
 import winUser
 import winKernel
 import fileUtils
+import extensionPoints
 
 #: The URL to use for update checks.
 CHECK_URL = "https://www.nvaccess.org/nvdaUpdateCheck"
@@ -78,6 +79,15 @@ _stateFilename: Optional[str] = None
 #: The single instance of L{AutoUpdateChecker} if automatic update checking is enabled,
 #: C{None} if it is disabled.
 autoChecker: Optional["AutoUpdateChecker"] = None
+
+decide_checkForUpdate = extensionPoints.Decider()
+"""
+Notifies when an update check is about to be performed,
+and allows components or add-ons to decide whether the check should actually be performed.
+For example, when performing an add-on update check, it may be inadvisable to perform an automatic
+update check at the same time. Or, an add-on may want to block update checks while on battery.
+Handlers are called with a bool flag indicating whether this was an automatic update check.
+"""
 
 
 def getQualifiedDriverClassNameForStats(cls):
@@ -108,6 +118,9 @@ def checkForUpdate(auto: bool = False) -> Optional[Dict]:
 	@return: Information about the update or C{None} if there is no update.
 	@raise RuntimeError: If there is an error checking for an update.
 	"""
+	if not decide_checkForUpdate.decide(auto=auto):
+		log.debug("Update check canceled by handler registered to decide_checkForUpdate extension point")
+		return
 	allowUsageStats=config.conf["update"]['allowUsageStats']
 	# #11837: build version string, service pack, and product type manually
 	# because winVersion.getWinVer adds Windows release name.
