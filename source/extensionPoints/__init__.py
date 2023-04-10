@@ -178,7 +178,7 @@ class AccumulatingDecider(HandlerRegistrar[Callable[..., bool]]):
 	which are unknown to NVDA, but this extension point can be used to pass each unknown parameter
 	to all add-ons since one of them may want to process some command line arguments.
 
-	First, a AccumulatingDecider is created with a default decision  :
+	First, an AccumulatingDecider is created with a default decision  :
 
 	>>> doSomething = AccumulatingDecider(defaultDecision=True)
 
@@ -191,14 +191,14 @@ class AccumulatingDecider(HandlerRegistrar[Callable[..., bool]]):
 	...
 	>>> doSomething.register(shouldDoSomething)
 
-	When the decision is to be made registered handlers are called and their return values are collected,
+	When the decision is to be made, registered handlers are called and their return values are collected,
 	see L{util.callWithSupportedKwargs}
 	for how args passed to decide are mapped to the handler:
 
 	>>> doSomething.decide(someArg=42)
 	False
 
-	If there are no handlers or all handlers return defaultDecision,
+	If there are no handlers or all handlers return the defaultDecision,
 	the return value is the value of the default decision.
 	"""
 
@@ -209,7 +209,7 @@ class AccumulatingDecider(HandlerRegistrar[Callable[..., bool]]):
 	def decide(self, **kwargs) -> bool:
 		"""Call handlers to make a decision.
 		Results returned from all handlers are collected
-		and if at least one handler returns value different than the one specifed as default it is returned.
+		and if at least one handler returns a value different than the one specified as default it is returned.
 		If there are no handlers or all handlers return the default value, the default value is returned.
 		@param kwargs: Arguments to pass to the handlers.
 		@return: The decision.
