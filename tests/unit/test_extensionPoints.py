@@ -77,7 +77,7 @@ class TestCallWithSupportedKwargs(unittest.TestCase):
 			extensionPoints.callWithSupportedKwargs(unboundInstanceMethod)
 
 	def test_instanceMethodHandlerTakesKwargs_givenKwargs(self):
-		"""Test to ensure that a instance method handler gets the correct arguments, including implicit "self"
+		"""Test to ensure that an instance method handler gets the correct arguments, including implicit "self"
 		Handler takes **kwargs.
 		callWithSupportedKwargs given key word arguments.
 		Handler should get all values.
@@ -93,7 +93,7 @@ class TestCallWithSupportedKwargs(unittest.TestCase):
 		self.assertEqual(calledKwargs, {'a': 'a value', 'b': 'b value'})
 
 	def test_instanceMethodHandlerTakesParamsAndKwargs_givenKwargs(self):
-		"""Test to ensure that a instance method handler gets the correct arguments, including implicit "self"
+		"""Test to ensure that an instance method handler gets the correct arguments, including implicit "self"
 		Handler takes a parameter and **kwargs.
 		callWithSupportedKwargs given key word arguments.
 		Handler should get all values.
@@ -110,7 +110,7 @@ class TestCallWithSupportedKwargs(unittest.TestCase):
 		self.assertEqual(calledKwargs, {'a': 'a value', 'b': 'b value'})
 
 	def test_instanceMethodHandlerTakesParamsAndKwargs_givenPositional(self):
-		"""Test to ensure that a instanceMethod handler gets the correct arguments, including implicit "self"
+		"""Test to ensure that an instanceMethod handler gets the correct arguments, including implicit "self"
 		Handler takes parameter and key word arguments.
 		callWithSupportedKwargs given a positional.
 		Handler should get positional.
@@ -127,7 +127,7 @@ class TestCallWithSupportedKwargs(unittest.TestCase):
 		self.assertEqual(calledKwargs, {'a': 'a value'})
 
 	def test_instanceMethodHandlerTakesParams_givenPositional(self):
-		"""Test to ensure that a instance method handler gets the correct arguments, including implicit "self"
+		"""Test to ensure that an instance method handler gets the correct arguments, including implicit "self"
 		Handler takes a parameter.
 		callWithSupportedKwargs given a positional.
 		Handler should get positional.
@@ -143,7 +143,7 @@ class TestCallWithSupportedKwargs(unittest.TestCase):
 		self.assertEqual(calledKwargs, {'a': 'a value'})
 
 	def test_instanceMethodHandlerTakesParams_givenRequiredKwarg(self):
-		"""Test to ensure that a instance method handler gets the correct arguments, including implicit "self"
+		"""Test to ensure that an instance method handler gets the correct arguments, including implicit "self"
 		Handler takes a required keyword argument.
 		callWithSupportedKwargs given a keyword arg with a matching name.
 		Handler should get required kwarg.
@@ -159,7 +159,7 @@ class TestCallWithSupportedKwargs(unittest.TestCase):
 		self.assertEqual(calledKwargs, {'a': 'a value'})
 
 	def test_instanceMethodHandlerTakesParams_givenMatchingNameKwarg(self):
-		"""Test to ensure that a instance method handler gets the correct arguments, including implicit "self"
+		"""Test to ensure that an instance method handler gets the correct arguments, including implicit "self"
 		Handler takes a parameter.
 		callWithSupportedKwargs given a keyword arg with a matching name.
 		Handler should get kwarg.
@@ -459,7 +459,7 @@ class TestAction(unittest.TestCase):
 		self.assertEqual(called, [handler1, handler2])
 
 	def test_instanceMethodHandler(self):
-		""" Test that a instance method function is called as expected
+		""" Test that an instance method function is called as expected
 		"""
 		calledKwargs = {}
 		class handlerClass():
@@ -581,7 +581,7 @@ class TestFilter(unittest.TestCase):
 		self.assertEqual(filtered, 2)
 
 	def test_instanceMethodHandler(self):
-		""" Test that a instance method function is called as expected
+		""" Test that an instance method function is called as expected
 		"""
 		calledKwargs = {}
 		class handlerClass():
@@ -697,7 +697,7 @@ class TestDecider(unittest.TestCase):
 		self.assertEqual(decision, True)
 
 	def test_instanceMethodHandler(self):
-		""" Test that a instance method function is called as expected
+		""" Test that an instance method function is called as expected
 		"""
 		calledKwargs = {}
 		class handlerClass():
@@ -825,7 +825,7 @@ class TestAccumulatingDecider(unittest.TestCase):
 		self.assertEqual(decision, True)
 
 	def test_instanceMethodHandler(self):
-		""" Test that a instance method function is called as expected
+		""" Test that an instance method function is called as expected
 		"""
 		calledKwargs = {}
 
@@ -1076,7 +1076,7 @@ class TestChain(unittest.TestCase):
 			next(generator)
 
 	def test_instanceMethodHandler(self):
-		""" Test that a instance method function is called as expected
+		""" Test that an instance method function is called as expected
 		"""
 
 		class handlerClass():
