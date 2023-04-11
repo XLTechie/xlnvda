@@ -128,7 +128,7 @@ def checkForUpdate(auto: bool = False) -> Optional[Dict]:
 	@raise RuntimeError: If there is an error checking for an update.
 	"""
 	if not decide_checkForUpdate.decide(auto=auto):
-		log.debug("Update check canceled by handler registered to decide_checkForUpdate extension point")
+		log.debug(f"{"Automatic" if auto else "Manual"} update check canceled by handler registered to decide_checkForUpdate extension point")
 		return None
 	allowUsageStats=config.conf["update"]['allowUsageStats']
 	# #11837: build version string, service pack, and product type manually
