@@ -270,6 +270,10 @@ class UpdateChecker(garbageHandler.TrackedObject):
 	def check(self):
 		"""Check for an update.
 		"""
+		if not decide_checkForUpdate.decide(auto=self.AUTO):
+			log.debug("Manual update check interrupted by decider registered to decide_checkForUpdate")
+			ui.message("Update checking is currently blocked.")
+			return
 		t = threading.Thread(
 			name=f"{self.__class__.__module__}.{self.check.__qualname__}",
 			target=self._bg
