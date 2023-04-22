@@ -236,10 +236,10 @@ def executePendingUpdate():
 
 def _executeUpdate(destPath):
 	if not destPath:
-		return
+		return None
 	if not decide_installUpdate.decide(destPath=destPath):
 		log.info("Update installation canceled by handler registered to decide_installUpdate extension point")
-		return
+		return None
 
 	_setStateToNone(state)
 	saveState()
