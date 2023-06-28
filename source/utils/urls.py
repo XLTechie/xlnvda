@@ -134,13 +134,17 @@ class URLManager(metaclass=_Singleton):
 			)
 			self._originalURLs[handle] = _URL(URL)
 		else:
-			log.info(f"Setting up diversion of the {handle} URL. Reason: {reason}.")
 			self._divertedURLs[handle] = _URL(URL)
 			stackInfo = sys._getframe().f_back.f_code
 			self._blames[handle] = (
-				f"{stackInfo.co_name}() from {stackInfo.co_filename}",
+				stackInfo.co_name,
+				stackInfo.co_filename,
 				reason
 			)
+			log.debug(
+				f"Set diversion of the {handle} URL by {stackInfo.co_name} in "
+			 	f"{stackInfo.co_filename}, because {reason}"
+			 )
 
 	def __getattr__(self, handle) -> Any:
 		"""Delivers the requested URL.
@@ -151,7 +155,7 @@ class URLManager(metaclass=_Singleton):
 		if handle in self._divertedURLs:
 			log.info(
 				f"Using diverted URL for {handle}: <{self._divertedURLs[handle]}>. "
-				f"{self._blames[handle][0]} diverted this URL because {self._blames[handle][1]}."
+				f"{self._blames[handle][0]} diverted this URL because {self._blames[handle][2]}."
 			)
 			return self._divertedURLs[handle]
 		elif handle in self._originalURLs:
