@@ -59,16 +59,9 @@ class _Singleton(type):
 #: Contains a single URL used somewhere in NVDA.
 #: Does its best to make that an immutable string.
 @dataclass(frozen=True, repr=False)
-class _URL:
+class _URL(str):
 	__slots__ = ("_URL")
 	_URL: str
-
-	def __repr__(self):
-		return self.__str__()
-
-	def __str__(self) -> str:
-		"""Returns the URL represented by this object."""
-		return self._URL
 
 
 @dataclass(frozen=True, repr=False, init=True)
