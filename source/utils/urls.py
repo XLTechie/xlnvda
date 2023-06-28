@@ -101,7 +101,6 @@ class URLManager(metaclass=_Singleton):
 		@param requireSecure: Set to False if an "http" URL must
 		be used. Avoid if possible.
 		"""
-		print(f"{requireSecure}\n{URL}\n")
 		# Check URL security
 		if (
 			not URL.lower().startswith("https://")
