@@ -32,7 +32,7 @@ from .message import (
 	messageBox,
 	displayDialogAsModal,
 )
-from nvdaControls import MessageDialog
+from .nvdaControls import MessageDialog
 from . import blockAction
 from .speechDict import (
 	DefaultDictionaryDialog,
