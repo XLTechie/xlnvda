@@ -291,7 +291,8 @@ class MessageDialog(DPIScaledDialog):
 			return
 
 	def _playSound(self):
-		winsound.MessageBeep(self._soundID)
+		if self._soundID is not None:
+			winsound.MessageBeep(self._soundID)
 
 	def __init__(self, parent, title, message, dialogType=DIALOG_TYPE_STANDARD):
 		DPIScaledDialog.__init__(self, parent, title=title)
