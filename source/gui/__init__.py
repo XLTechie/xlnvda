@@ -443,26 +443,22 @@ class MainFrame(wx.Frame):
 	)
 	def onRunCOMRegistrationFixesCommand(self, evt):
 		"""Manages the interactive running of the COM Registration Fixing Tool.
-		Shows a dialog to the user, giving a brief overview of what is going to happen.
+		Shows a dialog to the user, giving an overview of what is going to happen.
 		If the user chooses to continue: runs the tool, and displays a completion dialog.
-		Silently cancels the run attempt if the user fails or declines the UAC prompt.
+		Cancels the run attempt if the user fails or declines the UAC prompt.
 		"""
-		self.prePopup()
 		# Translators: Explain the COM Registration Fixing tool to users before running
 		INTRO_MESSAGE = _("""Welcome to the COM Registration Fixing tool.
-This tool is used by NVDA to fix problems it may have as it tries to interact
-with various applications, or with Windows itself.
+This tool is used by NVDA to fix problems it may have as it tries to interact with various applications, or with Windows itself.
 	It examines the system registry for corrupted or missing accessibility entries and will correct them.
-Those entries can sometimes be damaged by installing or uninstalling programs,
-or other system events. This can result in "unknown" or "pane" being spoken instead of the content you
-were expecting, or previously accessible elements suddenly no longer reading correctly.
+Those entries can sometimes be damaged by installing or uninstalling programs, or other system events. This can result in "unknown" or "pane" being spoken instead of the content you were expecting, or previously accessible elements suddenly no longer reading correctly.
 	
 	You have most likely been asked to run this tool by NVDA support or a power user trying to assist you.
 
-Because it may need to modify the Windows registry, if you have User Account Control (UAC) active, you will
-be prompted by UAC before it can do its job. This is normal and you should answer using the Yes button.
+Because it needs to modify the Windows registry, if you have User Account Control (UAC) active, you will be prompted by UAC before this tool can do its job. This is normal and you should answer using the Yes button.
 
-Do you wish to try to repair the registry at this time?""")  # noqa: E501 Flake8 sees this block as one line
+Do you wish to try to repair the registry at this time?
+""")  # noqa: E501 Flake8 sees this block as one line
 		class CRFTInfoPromptDialog(MessageDialog):
 			def _addButtons(self, buttonHelper):
 				"""Adds continue / cancel buttons.
@@ -482,12 +478,12 @@ Do you wish to try to repair the registry at this time?""")  # noqa: E501 Flake8
 					label=_("Cancel")
 				)
 				cancel.Bind(wx.EVT_BUTTON, lambda evt: self.EndModal(wx.CANCEL))
-			response = displayDialogAsModal(CRFTInfoPromptDialog(
-				self,
-				# Translators: The title of the notice dialog displayed when launching the COM Registration Fixing tool 
-				_("Fix COM Registrations"),
-				INTRO_MESSAGE
-			))
+		response = displayDialogAsModal(CRFTInfoPromptDialog(
+			self,
+			# Translators: The title of the notice dialog displayed when launching the COM Registration Fixing tool 
+			_("Fix COM Registrations"),
+			INTRO_MESSAGE
+		))
 		if response == wx.CANCEL:
 			log.debug("Run of COM Registration Fixing Tool canceled before UAC.")
 			return
@@ -517,6 +513,7 @@ Do you wish to try to repair the registry at this time?""")  # noqa: E501 Flake8
 		finally:  # Clean up the progress dialog, and display any important error to the user before returning
 			progressDialog.done()
 			del progressDialog
+			self.postPopup()
 			# If there was a Windows error, inform the user because it may have support value
 			if error is not None:
 				messageBox(
