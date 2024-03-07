@@ -454,7 +454,7 @@ This tool is used by NVDA to fix problems it may have as it tries to interact wi
 	It examines the system registry for corrupted or missing accessibility entries and will correct them.\n
 Those entries can sometimes be damaged by installing or uninstalling programs, or other system events. This can result in "unknown" or "pane" being spoken instead of the content you were expecting, or previously accessible elements suddenly no longer reading correctly.\n\n
 		You have most likely been asked to run this tool by NVDA support or a power user trying to assist you.\n\n
-Because it needs to modify the Windows registry, if you have User Account Control (UAC) active, you will be prompted by UAC before this tool can do its job. This is normal and you should answer using the Yes button.\n\n
+Because it needs to modify the Windows registry, if you have User Account Control (UAC) active, you will be prompted by UAC before this tool can do its job. This is normal and you should answer using the Continue button.\n\n
 Do you wish to try to repair the registry at this time?\n"""  # noqa: E501 Flake8 sees this block as one line
 		)
 		class CRFTInfoPromptDialog(MessageDialog):
