@@ -497,21 +497,22 @@ Do you wish to try to repair the registry at this time?\n"""  # noqa: E501 Flake
 			systemUtils.execElevated(config.SLAVE_FILENAME, ["fixCOMRegistrations"])
 		except WindowsError as e:
 			# 1223 is "The operation was canceled by the user."
-			if e.winerror == 1223:
-				# Same as if the user selected "no" in the initial dialog.
-				log.debug("Run of COM Registration Fixing Tool canceled during UAC.")
-				return
-			else:
-				log.error("Could not execute fixCOMRegistrations command", exc_info=True)
-				error = e  # Hold for later display to the user
-				return
+			# Commented out for testing
+			#if e.winerror == 1223:
+			#	# Same as if the user selected "no" in the initial dialog.
+			#	log.debug("Run of COM Registration Fixing Tool canceled during UAC.")
+			#	return
+			# Indent changed for testing
+			#else:
+			log.error("Could not execute fixCOMRegistrations command, error while altering registry.", exc_info=True)
+			error = e  # Hold for later display to the user
+			return
 		except Exception as e:
 			log.error("Could not execute fixCOMRegistrations command", exc_info=True)
 			return
 		finally:  # Clean up the progress dialog, and display any important error to the user before returning
 			progressDialog.done()
 			del progressDialog
-			self.postPopup()
 			# If there was a Windows error, inform the user because it may have support value
 			if error is not None:
 				messageBox(
@@ -521,7 +522,7 @@ Do you wish to try to repair the registry at this time?\n"""  # noqa: E501 Flake
 						"error may provide more information.    {}"
 					).format(error),
 					# Translators: title of the dialog showing the COM Registration Fix failure
-					_("COM Registration Fix Tool Failed"), wx.OK
+					_("COM Registration Fixing Tool Failed"), wx.OK
 				)
 		# Display success dialog if there were no errors
 		messageBox(
