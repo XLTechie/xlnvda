@@ -133,7 +133,7 @@ class AddonStoreVM:
 				actionTarget=selectedListItem
 			),
 			AddonActionVM(
-				# Translators: Label for an action that installs the selected addon
+				# Translators: Label for an action that updates the selected addon
 				displayName=pgettext("addonStore", "&Update (override incompatibility)"),
 				actionHandler=self.installOverrideIncompatibilityForAddon,
 				validCheck=lambda aVM: aVM.canUseUpdateOverrideIncompatibilityAction(),
