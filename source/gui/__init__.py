@@ -476,12 +476,14 @@ Do you wish to try to repair the registry at this time?\n"""  # noqa: E501 Flake
 					label=_("Cancel")
 				)
 				cancel.Bind(wx.EVT_BUTTON, lambda evt: self.EndModal(wx.CANCEL))
-		response = displayDialogAsModal(CRFTInfoPromptDialog(
-			self,
+		#response = displayDialogAsModal(CRFTInfoPromptDialog(
+		response = messageBox(
+			INTRO_MESSAGE,
 			# Translators: The title of the notice dialog displayed when launching the COM Registration Fixing tool 
-			_("Fix COM Registrations"),
-			INTRO_MESSAGE
-		))
+			caption=_("Fix COM Registrations"),
+			style=wx.ID_OK | wx.ID_CANCEL | wx.CENTER
+			parent=self
+		)#)
 		if response == wx.CANCEL:
 			log.debug("Run of COM Registration Fixing Tool canceled before UAC.")
 			return
