@@ -441,7 +441,7 @@ class MainFrame(wx.Frame):
 		blockAction.Context.SECURE_MODE,
 		blockAction.Context.MODAL_DIALOG_OPEN,
 	)
-	def onRunCOMRegistrationFixesCommand(self, evt):
+	def onRunCOMRegistrationFixesCommand(self, evt) -> None:
 		"""Manages the interactive running of the COM Registration Fixing Tool.
 		Shows a dialog to the user, giving an overview of what is going to happen.
 		If the user chooses to continue: runs the tool, and displays a completion dialog.
