@@ -453,11 +453,11 @@ class MainFrame(wx.Frame):
 This tool is used by NVDA to fix problems it may have as it tries to interact with various applications, or with Windows itself.\n
 	It examines the system registry for corrupted or missing accessibility entries and will correct them.\n
 Those entries can sometimes be damaged by installing or uninstalling programs, or other system events. This can result in "unknown" or "pane" being spoken instead of the content you were expecting, or previously accessible elements suddenly no longer reading correctly.\n\n
-		You have most likely been asked to run this tool by NVDA support or a power user trying to assist you.\n\n
+		You have most likely been asked to run this tool by NVDA support or a power user trying to assist you.\n
 Because it needs to modify the Windows registry, if you have User Account Control (UAC) active, you will be prompted by UAC before this tool can do its job. This is normal and you should answer using the Continue button.\n\n
-Do you wish to try to repair the registry at this time?\n"""  # noqa: E501 Flake8 sees this block as one line
+Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees this block as one line
 		)
-		class CRFTInfoPromptDialog(MessageDialog):
+		'''class CRFTInfoPromptDialog(MessageDialog):
 			def _addButtons(self, buttonHelper):
 				"""Adds continue / cancel buttons.
 				"""
@@ -477,6 +477,7 @@ Do you wish to try to repair the registry at this time?\n"""  # noqa: E501 Flake
 				)
 				cancel.Bind(wx.EVT_BUTTON, lambda evt: self.EndModal(wx.CANCEL))
 		#response = displayDialogAsModal(CRFTInfoPromptDialog(
+'''
 		response = messageBox(
 			INTRO_MESSAGE,
 			# Translators: The title of the notice dialog displayed when launching the COM Registration Fixing tool 
