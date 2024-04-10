@@ -482,7 +482,7 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 			INTRO_MESSAGE,
 			# Translators: The title of the notice dialog displayed when launching the COM Registration Fixing tool 
 			caption=_("Fix COM Registrations"),
-			style=wx.ID_OK | wx.ID_CANCEL | wx.CENTER
+			style=wx.ID_YES | wx.ID_CANCEL | wx.CENTER
 			parent=self
 		)#)
 		if response == wx.CANCEL:
