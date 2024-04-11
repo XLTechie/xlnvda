@@ -447,8 +447,8 @@ class MainFrame(wx.Frame):
 		If the user chooses to continue: runs the tool, and displays a completion dialog.
 		Cancels the run attempt if the user fails or declines the UAC prompt.
 		"""
-		INTRO_MESSAGE = _(
-			# Translators: Explain the COM Registration Fixing tool to users before running
+		# Translators: Explain the COM Registration Fixing tool to users before running
+		introMessage: str = _(
 """Welcome to the COM Registration Fixing tool.
 This tool is used by NVDA to fix problems it may have as it tries to interact with various applications, or with Windows itself.\n
 	It examines the system registry for corrupted or missing accessibility entries and will correct them.\n
@@ -477,14 +477,14 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 				)
 				cancel.Bind(wx.EVT_BUTTON, lambda evt: self.EndModal(wx.CANCEL))
 		#response = displayDialogAsModal(CRFTInfoPromptDialog(
-'''
-		response = messageBox(
-			INTRO_MESSAGE,
+		'''
+		response: int = messageBox(
+			introMessage,
 			# Translators: The title of the notice dialog displayed when launching the COM Registration Fixing tool 
 			caption=_("Fix COM Registrations"),
-			style=wx.ID_YES | wx.ID_CANCEL | wx.CENTER
+			style=wx.ID_YES | wx.ID_CANCEL | wx.CENTER,
 			parent=self
-		)#)
+		)
 		if response == wx.CANCEL:
 			log.debug("Run of COM Registration Fixing Tool canceled before UAC.")
 			return
@@ -495,8 +495,8 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 			# Translators: The message displayed while NVDA is running the COM Registration fixing tool
 			_("Please wait while NVDA attempts to fix your system's COM registrations...")
 		)
+		error: Optional[str] = None
 		try:
-			error = None
 			systemUtils.execElevated(config.SLAVE_FILENAME, ["fixCOMRegistrations"])
 		except WindowsError as e:
 			# 1223 is "The operation was canceled by the user."
