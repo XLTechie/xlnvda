@@ -483,10 +483,10 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 		response: int = messageBox(
 			introMessage,
 			caption=genericTitle,
-			style=wx.ID_OK | wx.ID_CANCEL | wx.CENTER,
+			style=wx.YES_NO | wx.CANCEL | wx.STAY_ON_TOP,
 			parent=self
 		)
-		if response == wx.CANCEL:
+		if response == wx.ID_CANCEL or response == wx.ID_NO:
 			log.debug("Run of COM Registration Fixing Tool canceled before UAC.")
 			return
 		progressDialog = IndeterminateProgressDialog(
