@@ -457,6 +457,8 @@ Those entries can sometimes be damaged by installing or uninstalling programs, o
 Because it needs to modify the Windows registry, if you have User Account Control (UAC) active, you will be prompted by UAC before this tool can do its job. This is normal and you should answer using the Continue button.\n\n
 Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees this block as one line
 		)
+		# Translators: The title of various dialogs displayed when using the COM Registration Fixing tool 
+		genericTitle: str = _("Fix COM Registrations")
 		'''class CRFTInfoPromptDialog(MessageDialog):
 			def _addButtons(self, buttonHelper):
 				"""Adds continue / cancel buttons.
@@ -480,9 +482,8 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 		'''
 		response: int = messageBox(
 			introMessage,
-			# Translators: The title of the notice dialog displayed when launching the COM Registration Fixing tool 
-			caption=_("Fix COM Registrations"),
-			style=wx.ID_YES | wx.ID_CANCEL | wx.CENTER,
+			caption=genericTitle,
+			style=wx.ID_OK | wx.ID_CANCEL | wx.CENTER,
 			parent=self
 		)
 		if response == wx.CANCEL:
@@ -490,8 +491,7 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 			return
 		progressDialog = IndeterminateProgressDialog(
 			mainFrame,
-			# Translators: The title of the dialog presented while NVDA is running the COM Registration fixing tool
-			_("COM Registration Fixing Tool"),
+			genericTitle,
 			# Translators: The message displayed while NVDA is running the COM Registration fixing tool
 			_("Please wait while NVDA attempts to fix your system's COM registrations...")
 		)
@@ -507,7 +507,7 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 			else:
 				log.error("Could not execute fixCOMRegistrations command", exc_info=True)
 				error = e  # Hold for later display to the user
-				return
+				return  # Safe because of finally block
 		except Exception as e:
 			log.error("Could not execute fixCOMRegistrations command", exc_info=True)
 			return
@@ -523,16 +523,14 @@ Do you wish to try to repair the registry now?\n"""  # noqa: E501 Flake8 sees th
 						"The COM Registration Fixing Tool was unsuccessful. This Windows "
 						"error may provide more information.    {}"
 					).format(error),
-					# Translators: title of the dialog showing the COM Registration Fix failure
-					_("COM Registration Fix Tool Failed"), wx.OK
+					# Translators: Added to the title of the dialog showing the COM Registration Fix failure
+					genericTitle + " " + _("Failed"), wx.OK
 				)
 		# Display success dialog if there were no errors
 		messageBox(
 			# Translators: Message shown when the COM Registration Fixing tool completes.
 			_("The COM Registration Fixing Tool has completed successfully."),
-			# Translators: The title of a dialog presented when the COM Registration
-			# Fixing Tool completes successfully.
-			_("COM Registration Fixing Tool"), wx.OK
+			genericTitle, wx.OK
 		)
 
 	@blockAction.when(blockAction.Context.MODAL_DIALOG_OPEN)
