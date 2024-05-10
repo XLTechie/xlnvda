@@ -140,7 +140,7 @@ parser.add_argument(
 	dest="logFileName",
 	type=str,
 	help="The file where log messages should be written to. "
-	"Default destination is %TEMP%/nvda.log. "
+	"Default destination is \"%%TEMP%%/nvda.log\". "
 	"Logging is always disabled if secure mode is enabled. "
 )
 parser.add_argument(
